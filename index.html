@@ -1,0 +1,1969 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vật Lí 10 - Bài 18: Lực Ma Sát | Luyện Tập Chủ Động</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
+        }
+
+        /* Chuẩn hóa hiển thị Ký hiệu Vật lí: Vectơ có mũi tên trên đầu, Phân số, Căn thức */
+        .vec {
+            position: relative;
+            display: inline-block;
+            font-style: italic;
+            font-weight: 600;
+            padding-top: 2px;
+        }
+        .vec::after {
+            content: "→";
+            position: absolute;
+            top: -0.56em;
+            left: 50%;
+            transform: translateX(-48%) scaleX(0.88);
+            font-size: 0.78em;
+            font-style: normal;
+            font-weight: 700;
+            line-height: 1;
+        }
+        .frac {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            padding: 0 3px;
+            font-size: 0.92em;
+        }
+        .frac > .num {
+            border-bottom: 1.5px solid currentColor;
+            padding: 0 3px 1px 3px;
+            line-height: 1.15;
+        }
+        .frac > .den {
+            padding: 1px 3px 0 3px;
+            line-height: 1.15;
+        }
+        .math-sqrt {
+            display: inline-flex;
+            align-items: center;
+            vertical-align: middle;
+        }
+        .math-sqrt-symbol {
+            font-size: 1.2em;
+            line-height: 1;
+            margin-right: 1px;
+            font-weight: 600;
+        }
+        .math-sqrt-content {
+            border-top: 1.5px solid currentColor;
+            padding-top: 1px;
+            padding-left: 2px;
+            padding-right: 3px;
+        }
+        .math-var {
+            font-style: italic;
+            font-weight: 600;
+        }
+
+        /* Hiệu ứng phản hồi tức thì khi học sinh tích chọn đáp án */
+        @keyframes popSuccess {
+            0% { transform: scale(0.96); opacity: 0.85; }
+            60% { transform: scale(1.02); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes shakeFunny {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            50% { transform: translateX(6px); }
+            75% { transform: translateX(-4px); }
+        }
+        .animate-pop {
+            animation: popSuccess 0.3s ease-out;
+        }
+        .animate-shake {
+            animation: shakeFunny 0.4s ease-in-out;
+        }
+    </style>
+</head>
+<body class="min-h-screen pb-12">
+
+    <!-- HEADER ĐƠN GIẢN, DỊU MẮT -->
+    <header class="bg-slate-900 text-white shadow-md sticky top-0 z-30 border-b border-blue-700/60">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+                <div class="w-11 h-11 rounded-xl bg-amber-400 text-slate-950 flex items-center justify-center font-extrabold text-[11px] shadow shrink-0">
+                    F<sub>ms</sub>=μN
+                </div>
+                <div>
+                    <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 block">Vật Lí 10 • Chương III: Động Lực Học</span>
+                    <h1 class="text-base sm:text-lg font-extrabold">BÀI 18: LỰC MA SÁT — LUYỆN TẬP TƯƠNG TÁC</h1>
+                </div>
+            </div>
+
+            <!-- Cụm nút Âm thanh & Sổ tay -->
+            <div class="flex items-center gap-2">
+                <button id="btnSoundToggle" onclick="toggleSound()" class="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition">
+                    <span id="soundIcon">🔊</span>
+                    <span id="soundLabel">Âm thanh: BẬT</span>
+                </button>
+                <button onclick="playSampleFunnySound()" class="px-2.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-300 text-slate-900 text-xs font-bold shadow-sm transition" title="Nghe thử âm thanh xác nhận Đúng/Sai vui nhộn">
+                    🎵 Thử âm
+                </button>
+                <button onclick="toggleModal('formulaModal', true)" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-600 transition">
+                    📖 Sổ tay Bài 18
+                </button>
+                <button onclick="openHistoryModal()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold border border-slate-600 transition">
+                    📊 Lịch sử (<span id="badgeAttemptCount">0</span>)
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto px-3 sm:px-5 pt-4 space-y-4">
+
+        <!-- THÔNG TIN HỌC SINH & TIẾN ĐỘ MỞ KHÓA 3 LẦN ĐẠT 12/12 CẤP ĐỘ 1 -->
+        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+                <!-- Họ tên & Lớp -->
+                <div class="md:col-span-5 flex gap-2">
+                    <div class="flex-1">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Họ và tên học sinh</label>
+                        <input id="inputStudentName" type="text" placeholder="Nhập họ tên..." oninput="saveProfile()"
+                            class="w-full px-3 py-1.5 rounded-lg border border-slate-300 focus:border-blue-600 outline-none text-sm font-semibold">
+                    </div>
+                    <div class="w-24">
+                        <label class="block text-[11px] font-bold text-slate-500 uppercase mb-1">Lớp</label>
+                        <input id="inputStudentClass" type="text" placeholder="10A1" oninput="saveProfile()"
+                            class="w-full px-2.5 py-1.5 rounded-lg border border-slate-300 focus:border-blue-600 outline-none text-sm font-semibold">
+                    </div>
+                </div>
+
+                <!-- Quy tắc mở khóa 3 ngôi sao -->
+                <div class="md:col-span-7 bg-amber-50/90 border border-amber-200 rounded-xl p-3 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <div class="text-xs text-amber-900 space-y-0.5 text-center sm:text-left">
+                        <div class="font-extrabold uppercase flex items-center justify-center sm:justify-start gap-1">
+                            <span>🔐</span>
+                            <span>Điều kiện mở khóa Cấp độ 2 & 3:</span>
+                        </div>
+                        <p>Bắt buộc làm hết <strong>12 câu Cấp độ 1</strong> và đạt <strong>đúng tuyệt đối 12/12 đủ 3 lần</strong> để nắm vững công thức <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">N</span> và bản chất Lực ma sát.</p>
+                    </div>
+                    <div class="bg-white px-3.5 py-2 rounded-lg border border-amber-300 text-center shrink-0">
+                        <div id="starsContainer" class="flex items-center justify-center gap-1 text-xl"></div>
+                        <div id="masteryProgressText" class="text-[11px] font-extrabold text-amber-800 mt-0.5">0 / 3 lần đạt 12/12</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- THANH CHỌN 3 CẤP ĐỘ -->
+        <section class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <!-- Cấp độ 1 -->
+            <button id="btnTabL1" onclick="switchLevel(1)" class="text-left p-3.5 rounded-xl border-2 transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold px-2 py-0.5 rounded bg-blue-100 text-blue-800">CẤP ĐỘ 1 • NỀN TẢNG</span>
+                    <span class="text-lg">📘</span>
+                </div>
+                <h2 class="font-extrabold text-sm sm:text-base text-slate-800 mt-1.5">Nhận Biết, Công Thức & Tính 1 Bước</h2>
+                <div class="mt-2 pt-2 border-t border-slate-200/80 flex justify-between text-xs font-semibold text-slate-600">
+                    <span>12 câu hỏi</span>
+                    <span id="statL1" class="text-blue-700 font-bold">Đạt 12/12: 0/3 lần</span>
+                </div>
+            </button>
+
+            <!-- Cấp độ 2 -->
+            <button id="btnTabL2" onclick="switchLevel(2)" class="text-left p-3.5 rounded-xl border-2 transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800">CẤP ĐỘ 2 • 7 - 8 ĐIỂM</span>
+                    <span id="lockIconL2" class="text-lg">🔒</span>
+                </div>
+                <h2 class="font-extrabold text-sm sm:text-base text-slate-800 mt-1.5">Bài Toán Vận Dụng Cơ Bản</h2>
+                <div class="mt-2 pt-2 border-t border-slate-200/80 flex justify-between text-xs font-semibold text-slate-600">
+                    <span>5 câu hỏi</span>
+                    <span id="statL2" class="text-amber-700 font-bold">Đang khóa</span>
+                </div>
+            </button>
+
+            <!-- Cấp độ 3 -->
+            <button id="btnTabL3" onclick="switchLevel(3)" class="text-left p-3.5 rounded-xl border-2 transition">
+                <div class="flex items-center justify-between">
+                    <span class="text-xs font-extrabold px-2 py-0.5 rounded bg-purple-100 text-purple-800">CẤP ĐỘ 3 • 9 - 10 ĐIỂM</span>
+                    <span id="lockIconL3" class="text-lg">🔒</span>
+                </div>
+                <h2 class="font-extrabold text-sm sm:text-base text-slate-800 mt-1.5">Lực Kéo Xiên Góc, Mặt Dốc & Hệ Vật</h2>
+                <div class="mt-2 pt-2 border-t border-slate-200/80 flex justify-between text-xs font-semibold text-slate-600">
+                    <span>5 câu hỏi</span>
+                    <span id="statL3" class="text-amber-700 font-bold">Đang khóa</span>
+                </div>
+            </button>
+        </section>
+
+        <!-- BANNER CẢNH BÁO KHI BẤM VÀO CẤP ĐỘ ĐANG KHÓA -->
+        <div id="lockedAlertBox" class="hidden bg-rose-50 border border-rose-300 text-rose-900 rounded-xl p-3.5 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-2.5 text-xs sm:text-sm">
+                <span class="text-xl">🚧</span>
+                <span id="lockedAlertText" class="font-semibold">Em cần hoàn thành Cấp độ 1 với điểm tuyệt đối 12/12 đủ 3 lần để mở khóa cấp độ này!</span>
+            </div>
+            <button onclick="document.getElementById('lockedAlertBox').classList.add('hidden')" class="px-2.5 py-1 rounded-lg bg-rose-200 hover:bg-rose-300 text-xs font-bold shrink-0">Đã hiểu</button>
+        </div>
+
+        <!-- KHU VỰC LÀM BÀI CHÍNH (TÍCH CHỌN LÀ HIỂN THỊ ĐÚNG/SAI NGAY LẬP TỨC) -->
+        <section id="quizMainCard" class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+            <!-- Thanh tiến độ câu hỏi -->
+            <div class="bg-slate-800 text-white px-4 py-3 flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                    <span id="levelPillHeader" class="px-2.5 py-0.5 rounded bg-blue-500 text-xs font-extrabold uppercase">Cấp độ 1</span>
+                    <span id="questionIndexHeader" class="text-sm font-bold">Câu 1 / 12</span>
+                </div>
+
+                <!-- Dãy ô số thứ tự câu hỏi -->
+                <div id="questionNumbersBar" class="flex flex-wrap items-center gap-1"></div>
+
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold bg-slate-700 px-2.5 py-1 rounded-lg">
+                        Đúng: <strong id="liveCorrectCounter" class="text-emerald-400">0</strong>/<span id="liveTotalCounter">12</span>
+                    </span>
+                    <button onclick="shuffleAndRestartCurrentLevel()" class="px-2.5 py-1 rounded-lg bg-blue-600 hover:bg-blue-500 text-xs font-bold transition" title="Đảo ngẫu nhiên câu hỏi và đáp án">
+                        🔀 Đảo đề mới
+                    </button>
+                </div>
+            </div>
+
+            <!-- Cột Trái: Câu hỏi & Đáp án | Cột Phải: Hình minh họa SVG chuẩn Vectơ & Đường gióng -->
+            <div class="p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+                <!-- Cột Trái (7 phần) -->
+                <div class="lg:col-span-7 space-y-4">
+                    <div class="flex items-center justify-between flex-wrap gap-1">
+                        <span id="questionCategoryBadge" class="text-xs font-bold px-2.5 py-1 rounded-md bg-blue-50 text-blue-800 border border-blue-200">
+                            📌 Lực ma sát trượt & Ma sát nghỉ
+                        </span>
+                        <span class="text-[11px] text-emerald-700 font-semibold bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
+                            ⚡ Tích chọn đáp án là báo Đúng/Sai ngay
+                        </span>
+                    </div>
+
+                    <!-- Đề bài -->
+                    <div id="questionTextContainer" class="text-base sm:text-lg font-bold text-slate-800 bg-slate-50 p-4 rounded-xl border border-slate-200 leading-relaxed">
+                    </div>
+
+                    <!-- 4 Phương án lựa chọn A, B, C, D (Bấm vào là chấm ngay) -->
+                    <div id="optionsListContainer" class="space-y-2.5"></div>
+
+                    <!-- Hộp Phản hồi Đúng/Sai Vui Nhộn + Hướng dẫn giải chi tiết (Hiện ngay sau khi tích chọn) -->
+                    <div id="feedbackContainer" class="hidden rounded-xl p-4 border-2 space-y-2">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="flex items-center gap-2.5">
+                                <span id="feedbackIcon" class="text-2xl sm:text-3xl">🎉</span>
+                                <div>
+                                    <h4 id="feedbackTitle" class="font-extrabold text-sm sm:text-base">Chính xác!</h4>
+                                    <p id="feedbackFunnyMsg" class="text-xs text-slate-700 font-medium"></p>
+                                </div>
+                            </div>
+                            <button onclick="replayLastFeedbackSound()" class="px-2.5 py-1 rounded-lg bg-white/90 hover:bg-white border border-slate-300 text-xs font-bold text-slate-700 shrink-0">
+                                🔊 Nghe lại âm
+                            </button>
+                        </div>
+                        <div class="bg-white/95 rounded-lg p-3 border border-slate-200/80 text-xs sm:text-sm text-slate-800 leading-relaxed">
+                            <div class="font-extrabold text-blue-900 text-xs uppercase mb-1">💡 Hướng dẫn giải chi tiết & Ghi nhớ:</div>
+                            <div id="feedbackExplanation"></div>
+                        </div>
+                    </div>
+
+                    <!-- Thanh điều hướng Câu trước / Câu tiếp theo -->
+                    <div class="pt-1 flex items-center justify-between gap-3">
+                        <button id="btnPrevQ" onclick="navigateQuestion(-1)" class="px-4 py-2 rounded-xl border border-slate-300 hover:bg-slate-100 text-xs sm:text-sm font-bold text-slate-700 disabled:opacity-40 disabled:pointer-events-none">
+                            ← Câu trước
+                        </button>
+                        <button id="btnNextQ" onclick="navigateQuestion(1)" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-sm transition">
+                            Câu tiếp theo →
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Cột Phải (5 phần): Hình minh họa SVG sát thực tế, chuẩn Vectơ & Đường gióng -->
+                <div class="lg:col-span-5 bg-slate-50 rounded-xl border border-slate-200 p-3.5 flex flex-col items-center">
+                    <div class="w-full flex items-center justify-between pb-2 mb-2 border-b border-slate-200">
+                        <span id="svgDiagramHeading" class="text-xs font-extrabold text-slate-700 uppercase">📐 Hình minh họa trực quan</span>
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded bg-blue-100 text-blue-800">Đường gióng chính xác</span>
+                    </div>
+                    <div id="svgCanvasBox" class="w-full flex items-center justify-center min-h-[285px] bg-white rounded-lg border border-slate-200/70 p-2">
+                    </div>
+                    <p id="svgCaptionText" class="text-xs text-slate-500 text-center italic mt-2"></p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- MÀN HÌNH TỔNG KẾT CUỐI LƯỢT LÀM BÀI -->
+        <section id="summaryCard" class="hidden bg-white rounded-2xl shadow-md border-2 border-blue-200 p-6 text-center space-y-5">
+            <div id="summaryEmoji" class="w-16 h-16 mx-auto rounded-2xl bg-amber-100 flex items-center justify-center text-4xl">🏆</div>
+            <div class="space-y-1 max-w-lg mx-auto">
+                <span id="summaryLevelBadge" class="text-xs font-extrabold uppercase px-3 py-1 rounded-full bg-blue-100 text-blue-800">Hoàn thành Cấp độ 1</span>
+                <h2 id="summaryTitle" class="text-xl sm:text-2xl font-extrabold text-slate-900">Kết quả lượt luyện tập</h2>
+                <p id="summarySubtitle" class="text-xs sm:text-sm text-slate-600"></p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-xl mx-auto">
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <div class="text-xs font-bold text-slate-500 uppercase">Số câu đúng</div>
+                    <div id="summaryScoreFraction" class="text-2xl font-extrabold text-blue-700 mt-1">12 / 12</div>
+                </div>
+                <div class="bg-slate-50 p-3.5 rounded-xl border border-slate-200">
+                    <div class="text-xs font-bold text-slate-500 uppercase">Điểm quy đổi</div>
+                    <div id="summaryGrade10" class="text-2xl font-extrabold text-emerald-600 mt-1">10.0 đ</div>
+                </div>
+                <div class="bg-amber-50 p-3.5 rounded-xl border border-amber-200">
+                    <div class="text-xs font-bold text-amber-800 uppercase">Mở khóa CĐ 1 (12/12)</div>
+                    <div id="summaryMasteryCount" class="text-2xl font-extrabold text-amber-700 mt-1">1 / 3 lần</div>
+                </div>
+            </div>
+
+            <!-- Phiếu kết quả chụp màn hình nộp giáo viên -->
+            <div class="max-w-xl mx-auto bg-blue-50/70 border border-blue-200 rounded-xl p-3.5 text-left text-xs space-y-1">
+                <div class="font-extrabold text-blue-900 flex justify-between">
+                    <span>📋 PHIẾU XÁC NHẬN KẾT QUẢ (BÀI 18 - LỰC MA SÁT)</span>
+                    <span id="summaryTimeLabel"></span>
+                </div>
+                <p><strong>Học sinh:</strong> <span id="certName">Chưa nhập</span> — <strong>Lớp:</strong> <span id="certClass">Chưa nhập</span></p>
+                <p><strong>Số lần đạt tuyệt đối 12/12 Cấp độ 1:</strong> <strong id="certMastery" class="text-emerald-700">0/3 lần</strong> • <strong>Tổng số lượt làm:</strong> <span id="certAttempts">1</span></p>
+                <p><strong>Kỷ lục các cấp độ:</strong> CĐ 1: <span id="certBest1">0/12</span> | CĐ 2 (7-8đ): <span id="certBest2">--/5</span> | CĐ 3 (9-10đ): <span id="certBest3">--/5</span></p>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-3 pt-1">
+                <button id="btnRetryLevel" onclick="shuffleAndRestartCurrentLevel()" class="px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white font-extrabold text-sm shadow transition">
+                    🔄 Làm lại Cấp độ 1 (Đảo câu hỏi & Đáp án)
+                </button>
+                <button id="btnNextUnlockedLevel" onclick="goNextLevelAfterSummary()" class="hidden px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-sm shadow transition">
+                    🚀 Chuyển lên Cấp độ tiếp theo
+                </button>
+            </div>
+        </section>
+
+        <!-- FOOTER & CHẾ ĐỘ GIÁO VIÊN -->
+        <footer class="pt-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
+            <span>Vật Lí 10 GDPT 2018 • Bài 18: Lực ma sát • Tích chọn báo kết quả tức thì</span>
+            <div class="flex items-center gap-2">
+                <button id="btnTeacherUnlock" onclick="toggleTeacherMode()" class="px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition">
+                    👩‍🏫 Chế độ Giáo viên (Mở khóa nhanh để duyệt đề)
+                </button>
+                <button onclick="resetStudentProgress()" class="px-3 py-1 rounded-lg bg-rose-100 hover:bg-rose-200 text-rose-700 font-semibold transition">
+                    🗑️ Xóa dữ liệu làm lại
+                </button>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODAL SỔ TAY KIẾN THỨC TRỌNG TÂM BÀI 18 -->
+    <div id="formulaModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[86vh] flex flex-col shadow-xl overflow-hidden">
+            <div class="bg-slate-900 text-white px-5 py-3.5 flex items-center justify-between">
+                <h3 class="font-extrabold text-sm sm:text-base">📖 TÓM TẮT CÔNG THỨC BÀI 18: LỰC MA SÁT</h3>
+                <button onclick="toggleModal('formulaModal', false)" class="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 font-bold">✕</button>
+            </div>
+            <div class="p-5 overflow-y-auto space-y-4 text-xs sm:text-sm text-slate-700 leading-relaxed">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-3.5 space-y-1.5">
+                    <h4 class="font-extrabold text-blue-900">1. Lực ma sát trượt (<span class="vec">F</span><sub>mst</sub>)</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Đặc điểm:</strong> Xuất hiện ở mặt tiếp xúc khi vật trượt trên một bề mặt; có phương tiếp tuyến với mặt tiếp xúc và <strong>ngược chiều với chiều chuyển động (vận tốc)</strong> của vật.</li>
+                        <li><strong>Công thức độ lớn:</strong> <strong><span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="math-var">N</span></strong> (với <span class="math-var">N</span> là độ lớn áp lực/phản lực pháp tuyến; μ<sub>t</sub> là hệ số ma sát trượt, <strong>không có đơn vị</strong>).</li>
+                        <li><strong>Sự phụ thuộc:</strong> Độ lớn <span class="math-var">F</span><sub>mst</sub> và hệ số μ<sub>t</sub> <strong>KHÔNG phụ thuộc</strong> vào diện tích tiếp xúc và tốc độ của vật; chỉ phụ thuộc vào vật liệu và tình trạng của hai bề mặt tiếp xúc.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-3.5 space-y-1.5">
+                    <h4 class="font-extrabold text-emerald-900">2. Lực ma sát nghỉ (<span class="vec">F</span><sub>msn</sub>) & Lực ma sát lăn</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Lực ma sát nghỉ:</strong> Xuất hiện khi vật chịu ngoại lực có xu hướng làm vật trượt nhưng vật vẫn đứng yên. Có chiều ngược với xu hướng chuyển động và có độ lớn <strong>bằng độ lớn thành phần ngoại lực song song mặt tiếp xúc</strong> (<span class="math-var">F</span><sub>msn</sub> = <span class="math-var">F</span><sub>t</sub> ≤ <span class="math-var">F</span><sub>msn max</sub>).</li>
+                        <li>Khi vật bắt đầu trượt: <strong><span class="math-var">F</span><sub>msn max</sub> &gt; <span class="math-var">F</span><sub>mst</sub></strong>. Đối với người đi bộ, xe cộ, ma sát nghỉ đóng vai trò là <strong>lực phát động</strong>.</li>
+                        <li><strong>Lực ma sát lăn:</strong> Xuất hiện khi vật lăn trên bề mặt khác, có hệ số ma sát lăn rất nhỏ so với ma sát trượt.</li>
+                    </ul>
+                </div>
+
+                <div class="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-1.5">
+                    <h4 class="font-extrabold text-amber-900">3. Các công thức tính Áp lực <span class="math-var">N</span> và Gia tốc <span class="math-var">a</span> cần nhớ</h4>
+                    <ul class="list-disc pl-5 space-y-1">
+                        <li><strong>Trên mặt phẳng ngang (lực kéo ngang):</strong> <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span> ⇒ <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">m</span><span class="math-var">g</span>; &nbsp;<span class="math-var">a</span> = <span class="frac"><span class="num"><span class="math-var">F</span> − μ<span class="math-var">m</span><span class="math-var">g</span></span><span class="den"><span class="math-var">m</span></span></span>.</li>
+                        <li><strong>Kéo xiên góc α hướng chếch lên:</strong> <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sinα ⇒ <span class="math-var">F</span>cosα − μ(<span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sinα) = <span class="math-var">m</span><span class="math-var">a</span>.</li>
+                        <li><strong>Đẩy xiên góc α hướng chếch xuống:</strong> <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span> + <span class="math-var">F</span>sinα ⇒ <span class="math-var">F</span>cosα − μ(<span class="math-var">m</span><span class="math-var">g</span> + <span class="math-var">F</span>sinα) = <span class="math-var">m</span><span class="math-var">a</span>.</li>
+                        <li><strong>Trượt xuống mặt phẳng nghiêng góc α:</strong> <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span>cosα ⇒ <span class="math-var">a</span> = <span class="math-var">g</span>(sinα − μcosα).</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="px-5 py-3 bg-slate-100 border-t text-right">
+                <button onclick="toggleModal('formulaModal', false)" class="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs">Đã nắm rõ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LỊCH SỬ LÀM BÀI -->
+    <div id="historyModal" class="fixed inset-0 bg-slate-900/60 z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-xl w-full max-h-[82vh] flex flex-col shadow-xl overflow-hidden">
+            <div class="bg-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
+                <h3 class="font-extrabold text-sm sm:text-base">📊 NHẬT KÝ CÁC LẦN LÀM BÀI CỦA HỌC SINH</h3>
+                <button onclick="toggleModal('historyModal', false)" class="w-7 h-7 rounded-full bg-white/15 hover:bg-white/25 font-bold">✕</button>
+            </div>
+            <div id="historyListBox" class="p-5 overflow-y-auto space-y-2.5 text-xs sm:text-sm"></div>
+            <div class="px-5 py-3 bg-slate-100 border-t text-right">
+                <button onclick="toggleModal('historyModal', false)" class="px-4 py-1.5 rounded-lg bg-slate-800 text-white font-bold text-xs">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /**************************************************************************
+         * 1. BỘ TỔNG HỢP ÂM THANH WEB AUDIO API "VUI NHỘN & BẤT NGỜ"
+         **************************************************************************/
+        let soundOn = true;
+        let audioCtx = null;
+        let lastSoundWasCorrect = true;
+
+        function ensureAudioCtx() {
+            if (!audioCtx) {
+                const AC = window.AudioContext || window.webkitAudioContext;
+                if (AC) audioCtx = new AC();
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            return audioCtx;
+        }
+
+        function toggleSound() {
+            soundOn = !soundOn;
+            const btn = document.getElementById('btnSoundToggle');
+            document.getElementById('soundIcon').textContent = soundOn ? "🔊" : "🔇";
+            document.getElementById('soundLabel').textContent = soundOn ? "Âm thanh: BẬT" : "Âm thanh: TẮT";
+            btn.className = soundOn
+                ? "px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition"
+                : "px-3 py-1.5 rounded-lg bg-slate-600 hover:bg-slate-500 text-white text-xs font-bold flex items-center gap-1.5 shadow-sm transition";
+            if (soundOn) playCorrectFunnySound();
+        }
+
+        // 4 Hiệu ứng âm thanh ĐÚNG vui nhộn (Coin, Fanfare, Power-up chime, Arpeggio)
+        function playCorrectFunnySound() {
+            lastSoundWasCorrect = true;
+            if (!soundOn) return;
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+
+            const style = Math.floor(Math.random() * 4);
+            const now = ctx.currentTime;
+
+            if (style === 0) {
+                // Kiểu 1: Chuông ăn xu Mario + Hợp âm chiến thắng
+                const freqs = [523.25, 659.25, 783.99, 1046.5, 1318.5];
+                freqs.forEach((f, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(f, now + i * 0.07);
+                    gain.gain.setValueAtTime(0.22, now + i * 0.07);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.07 + 0.24);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.07);
+                    osc.stop(now + i * 0.07 + 0.25);
+                });
+            } else if (style === 1) {
+                // Kiểu 2: Kèn Fanfare Chiến thắng
+                const notes = [
+                    { f: 587.33, t: 0, d: 0.1 },
+                    { f: 587.33, t: 0.11, d: 0.1 },
+                    { f: 587.33, t: 0.22, d: 0.1 },
+                    { f: 880.0, t: 0.34, d: 0.38 }
+                ];
+                notes.forEach(n => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'square';
+                    osc.frequency.setValueAtTime(n.f, now + n.t);
+                    gain.gain.setValueAtTime(0.14, now + n.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + n.t + n.d);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + n.t);
+                    osc.stop(now + n.t + n.d + 0.02);
+                });
+            } else if (style === 2) {
+                // Kiểu 3: Tiếng chuông Power-up vút cao
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(420, now);
+                osc.frequency.exponentialRampToValueAtTime(1480, now + 0.3);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.36);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.38);
+            } else {
+                // Kiểu 4: Giai điệu Arpeggio 8-bit
+                const seq = [440, 554.37, 659.25, 880, 1108.73];
+                seq.forEach((f, i) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(f, now + i * 0.06);
+                    gain.gain.setValueAtTime(0.13, now + i * 0.06);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.06 + 0.16);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + i * 0.06);
+                    osc.stop(now + i * 0.06 + 0.17);
+                });
+            }
+        }
+
+        // 3 Hiệu ứng âm thanh SAI hài hước bất ngờ (Wah-wah-wah-waaah, Boing lò xo, Cartoon slip)
+        function playWrongFunnySound() {
+            lastSoundWasCorrect = false;
+            if (!soundOn) return;
+            const ctx = ensureAudioCtx();
+            if (!ctx) return;
+
+            const style = Math.floor(Math.random() * 3);
+            const now = ctx.currentTime;
+
+            if (style === 0) {
+                // Kiểu 1: Kèn Trombone "Wah-wah-wah-waaah"
+                const slides = [
+                    { f1: 392, f2: 370, t: 0, d: 0.17 },
+                    { f1: 370, f2: 349, t: 0.19, d: 0.17 },
+                    { f1: 349, f2: 330, t: 0.38, d: 0.17 },
+                    { f1: 330, f2: 220, t: 0.57, d: 0.42 }
+                ];
+                slides.forEach(s => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(s.f1, now + s.t);
+                    osc.frequency.linearRampToValueAtTime(s.f2, now + s.t + s.d);
+                    gain.gain.setValueAtTime(0.15, now + s.t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, now + s.t + s.d);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(now + s.t);
+                    osc.stop(now + s.t + s.d + 0.02);
+                });
+            } else if (style === 1) {
+                // Kiểu 2: Tiếng lò xo "Boing-Boing"
+                for (let i = 0; i < 2; i++) {
+                    const st = now + i * 0.21;
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(150, st);
+                    osc.frequency.exponentialRampToValueAtTime(560, st + 0.11);
+                    osc.frequency.exponentialRampToValueAtTime(190, st + 0.19);
+                    gain.gain.setValueAtTime(0.25, st);
+                    gain.gain.exponentialRampToValueAtTime(0.001, st + 0.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(st);
+                    osc.stop(st + 0.21);
+                }
+            } else {
+                // Kiểu 3: Tiếng trượt vỏ chuối Slide whistle
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(720, now);
+                osc.frequency.exponentialRampToValueAtTime(130, now + 0.42);
+                gain.gain.setValueAtTime(0.24, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.45);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.46);
+            }
+        }
+
+        function replayLastFeedbackSound() {
+            if (lastSoundWasCorrect) playCorrectFunnySound();
+            else playWrongFunnySound();
+        }
+
+        function playSampleFunnySound() {
+            if (!soundOn) toggleSound();
+            else playCorrectFunnySound();
+        }
+
+        const FUNNY_PRAISES = [
+            { title: "Đỉnh của chóp! Ma sát cũng không cản nổi em!", msg: "Tốc độ giải bài của em vượt qua mọi lực cản ma sát trượt luôn!" },
+            { title: "Chuẩn xác 100%! Newton vỗ tay rần rần!", msg: "Em nắm công thức Fmst = μN và phép chiếu trục tọa độ cực kỳ chắc chắn!" },
+            { title: "Quá siêu! Bám chắc kiến thức như lốp xe bám đường!", msg: "Không một bẫy lý thuyết nào trong Bài 18 có thể làm khó được em!" },
+            { title: "Tuyệt vời! Lực phát động trí tuệ cực đại!", msg: "Ma sát nghỉ giúp em tiến bước vững vàng lên điểm 10 Vật lí!" }
+        ];
+
+        const FUNNY_WRONGS = [
+            { title: "Ối! Trượt vỏ chuối mất rồi, đọc kĩ lời giải nhé!", msg: "Đừng để giảm ma sát bất ngờ làm trượt điểm, xem ngay hướng dẫn bên dưới nha!" },
+            { title: "Suýt đúng! Coi chừng nhầm ma sát nghỉ với ma sát trượt nha!", msg: "Hãy nhớ: Khi vật chưa trượt thì Fmsn bằng lực kéo, còn khi trượt thì Fmst = μN nhé!" },
+            { title: "Chưa chính xác! Nhớ chiếu lên trục Oy để tìm áp lực N nhé!", msg: "Đọc kỹ lời giải 10 giây bên dưới là lượt sau em sẽ làm đúng 100% ngay!" }
+        ];
+
+        /**************************************************************************
+         * 2. THƯ VIỆN 9 HÌNH VẼ & ĐỒ THỊ SVG CÓ ĐƯỜNG GIÓNG SỐ LIỆU CHÍNH XÁC
+         **************************************************************************/
+        function getDiagramSVG(type) {
+            switch (type) {
+                case 'svg_1_horizontal_friction':
+                    return {
+                        heading: "SVG 1: Vật trượt trên Mặt phẳng ngang (N = P = mg)",
+                        caption: "Đường gióng nét đứt trên hệ trục Oxy: Chiếu lên Oy ta có N = P = mg; chiếu lên Ox ta có Fk - Fmst = m·a (với Fmst = μt·N ngược chiều vận tốc v⃗).",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrBlue" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrRed" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                                <marker id="arrGreen" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#059669"/>
+                                </marker>
+                                <marker id="arrDark" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt sàn ngang -->
+                            <rect x="20" y="165" width="320" height="14" fill="#cbd5e1"/>
+                            <line x1="20" y1="165" x2="340" y2="165" stroke="#334155" stroke-width="2.5"/>
+
+                            <!-- Hệ trục tọa độ Oxy nét đứt đi qua tâm O(165, 130) -->
+                            <line x1="30" y1="130" x2="335" y2="130" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrDark)"/>
+                            <line x1="165" y1="225" x2="165" y2="22" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrDark)"/>
+                            <text x="328" y="120" font-size="12" font-weight="extrabold" fill="#0f172a">x</text>
+                            <text x="176" y="32" font-size="12" font-weight="extrabold" fill="#0f172a">y</text>
+
+                            <!-- Khối gỗ m -->
+                            <rect x="115" y="95" width="100" height="70" rx="5" fill="#fed7aa" stroke="#b45309" stroke-width="2.2"/>
+                            <circle cx="165" cy="130" r="4.5" fill="#0f172a"/>
+                            <text x="150" y="122" font-size="11" font-weight="extrabold" fill="#78350f">m</text>
+
+                            <!-- Phản lực N hướng lên và Trọng lực P hướng xuống -->
+                            <line x1="165" y1="130" x2="165" y2="48" stroke="#059669" stroke-width="3" marker-end="url(#arrGreen)"/>
+                            <text x="142" y="58" font-size="14" font-weight="extrabold" fill="#047857">N⃗</text>
+
+                            <line x1="165" y1="130" x2="165" y2="212" stroke="#0f172a" stroke-width="3" marker-end="url(#arrDark)"/>
+                            <text x="142" y="212" font-size="14" font-weight="extrabold" fill="#0f172a">P⃗</text>
+
+                            <!-- Lực kéo Fk hướng sang phải -->
+                            <line x1="165" y1="130" x2="285" y2="130" stroke="#2563eb" stroke-width="3.2" marker-end="url(#arrBlue)"/>
+                            <text x="275" y="116" font-size="14" font-weight="extrabold" fill="#1d4ed8">F⃗k</text>
+
+                            <!-- Lực ma sát trượt Fmst ở mặt tiếp xúc hướng sang trái -->
+                            <circle cx="140" cy="165" r="3.5" fill="#dc2626"/>
+                            <line x1="140" y1="165" x2="45" y2="165" stroke="#dc2626" stroke-width="3.2" marker-end="url(#arrRed)"/>
+                            <text x="68" y="195" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#dc2626">F⃗mst (Ngược chiều v⃗)</text>
+
+                            <text x="180" y="244" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#1e3a8a">• Oy: N = P = mg &nbsp;• Ox: Fk − Fmst = m·a &nbsp;(Fmst = μt·N)</text>
+                        </svg>`
+                    };
+
+                case 'svg_2_friction_graph':
+                    return {
+                        heading: "SVG 2: Đồ thị Lực ma sát Fms theo Lực kéo Fk (Đường gióng chính xác)",
+                        caption: "Khi Fk tăng từ 0 đến 12 N, vật đứng yên nên Fmsn = Fk (đoạn nghiêng 45°), đạt đỉnh Fmsn max = 12 N. Khi vật bắt đầu trượt, lực ma sát giảm xuống giá trị không đổi Fmst = 9 N.",
+                        svg: `
+                        <svg viewBox="0 0 360 265" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrAx2" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                            </defs>
+                            <!-- Tô màu vùng nghỉ (trái) và vùng trượt (phải) -->
+                            <rect x="55" y="45" width="115" height="175" fill="#eff6ff" fill-opacity="0.7"/>
+                            <rect x="170" y="45" width="145" height="175" fill="#fef2f2" fill-opacity="0.6"/>
+
+                            <!-- Trục tọa độ OFk (ngang) và OFms (đứng), gốc O tại (55, 220) -->
+                            <line x1="55" y1="220" x2="335" y2="220" stroke="#0f172a" stroke-width="2.2" marker-end="url(#arrAx2)"/>
+                            <line x1="55" y1="220" x2="55" y2="22" stroke="#0f172a" stroke-width="2.2" marker-end="url(#arrAx2)"/>
+                            <text x="42" y="235" font-size="11" font-weight="extrabold" fill="#0f172a">O</text>
+                            <text x="315" y="242" font-size="11" font-weight="extrabold" fill="#0f172a">Fk (N)</text>
+                            <text x="10" y="28" font-size="11" font-weight="extrabold" fill="#0f172a">Fms (N)</text>
+
+                            <!-- ĐƯỜNG GIÓNG NÉT ĐỨT TỌA ĐỘ CHÍNH XÁC -->
+                            <!-- Điểm (6 N ; 6 N) trong vùng nghỉ -->
+                            <line x1="112" y1="220" x2="112" y2="140" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="4,3"/>
+                            <line x1="55" y1="140" x2="112" y2="140" stroke="#2563eb" stroke-width="1.4" stroke-dasharray="4,3"/>
+                            <!-- Đỉnh ma sát nghỉ cực đại (12 N ; 12 N) tại (170, 60) -->
+                            <line x1="170" y1="220" x2="170" y2="60" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="5,4"/>
+                            <line x1="55" y1="60" x2="170" y2="60" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="5,4"/>
+                            <!-- Mức ma sát trượt Fmst = 9 N tại y = 100 -->
+                            <line x1="55" y1="100" x2="310" y2="100" stroke="#059669" stroke-width="1.6" stroke-dasharray="5,4"/>
+
+                            <!-- Đường biểu diễn đồ thị Fms(Fk) -->
+                            <path d="M 55 220 L 170 60 L 178 100 L 310 100" fill="none" stroke="#dc2626" stroke-width="3.2"/>
+
+                            <!-- Các điểm nút -->
+                            <circle cx="112" cy="140" r="4.5" fill="#2563eb"/>
+                            <circle cx="170" cy="60" r="5.5" fill="#dc2626"/>
+                            <circle cx="245" cy="100" r="4.5" fill="#059669"/>
+
+                            <!-- Chú thích trên đồ thị -->
+                            <text x="112" y="42" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#1e40af">Vật đứng yên (Fmsn = Fk)</text>
+                            <text x="250" y="42" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#991b1b">Vật trượt (Fmst &lt; Fmsn max)</text>
+                            <text x="208" y="58" font-size="10.5" font-weight="extrabold" fill="#dc2626">Fmsn max = 12 N</text>
+                            <text x="248" y="92" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#047857">Fmst = 9 N</text>
+
+                            <!-- Nhãn số liệu trên 2 trục -->
+                            <text x="48" y="64" text-anchor="end" font-size="11" font-weight="extrabold" fill="#dc2626">12</text>
+                            <text x="48" y="104" text-anchor="end" font-size="11" font-weight="extrabold" fill="#059669">9</text>
+                            <text x="48" y="144" text-anchor="end" font-size="11" font-weight="extrabold" fill="#2563eb">6</text>
+
+                            <text x="112" y="236" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#2563eb">6</text>
+                            <text x="170" y="236" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#dc2626">12</text>
+                            <text x="245" y="236" text-anchor="middle" font-size="11" font-weight="bold" fill="#334155">18</text>
+                        </svg>`
+                    };
+
+                case 'svg_3_four_cases_compare':
+                    return {
+                        heading: "SVG 3: So sánh Độ lớn Lực ma sát trượt trong 4 trường hợp",
+                        caption: "Vì Fmst = μ·N nên trường hợp nào có áp lực N lớn nhất thì Fmst lớn nhất. Ở Hình 3, lực F⃗ hướng chếch xuống nên N₃ = mg + F·sinα là lớn nhất!",
+                        svg: `
+                        <svg viewBox="0 0 360 260" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrC" markerWidth="6" markerHeight="6" refX="4.5" refY="3" orient="auto">
+                                    <polygon points="0 0, 6 3, 0 6" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                            <!-- Hình 1: F nằm ngang -->
+                            <rect x="12" y="12" width="162" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+                            <text x="93" y="28" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#334155">Hình 1 (Kéo ngang)</text>
+                            <line x1="25" y1="88" x2="160" y2="88" stroke="#0f172a" stroke-width="2"/>
+                            <rect x="52" y="64" width="44" height="24" fill="#fbbf24" stroke="#92400e" stroke-width="1.5"/>
+                            <line x1="74" y1="76" x2="142" y2="76" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrC)"/>
+                            <text x="135" y="68" font-size="11" font-weight="extrabold" fill="#dc2626">F⃗</text>
+                            <text x="93" y="110" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">N₁ = mg</text>
+
+                            <!-- Hình 2: F chếch lên góc alpha -->
+                            <rect x="186" y="12" width="162" height="110" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+                            <text x="267" y="28" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#334155">Hình 2 (Kéo chếch lên)</text>
+                            <line x1="198" y1="88" x2="335" y2="88" stroke="#0f172a" stroke-width="2"/>
+                            <rect x="222" y="64" width="44" height="24" fill="#fbbf24" stroke="#92400e" stroke-width="1.5"/>
+                            <line x1="244" y1="76" x2="315" y2="76" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+                            <line x1="244" y1="76" x2="305" y2="42" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrC)"/>
+                            <text x="285" y="70" font-size="10" font-weight="bold" fill="#0f172a">α</text>
+                            <text x="312" y="46" font-size="11" font-weight="extrabold" fill="#dc2626">F⃗</text>
+                            <text x="267" y="110" text-anchor="middle" font-size="10" font-weight="bold" fill="#2563eb">N₂ = mg − F·sinα</text>
+
+                            <!-- Hình 3: F chếch xuống góc alpha (LỚN NHẤT) -->
+                            <rect x="12" y="134" width="162" height="116" rx="8" fill="#fef2f2" stroke="#fca5a5" stroke-width="2"/>
+                            <text x="93" y="150" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#dc2626">Hình 3 (Đẩy chếch xuống)</text>
+                            <line x1="25" y1="195" x2="160" y2="195" stroke="#0f172a" stroke-width="2"/>
+                            <rect x="48" y="171" width="44" height="24" fill="#fbbf24" stroke="#92400e" stroke-width="1.5"/>
+                            <line x1="70" y1="183" x2="145" y2="183" stroke="#64748b" stroke-width="1.2" stroke-dasharray="3,3"/>
+                            <line x1="70" y1="183" x2="132" y2="218" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrC)"/>
+                            <text x="112" y="194" font-size="10" font-weight="bold" fill="#0f172a">α</text>
+                            <text x="142" y="222" font-size="11" font-weight="extrabold" fill="#dc2626">F⃗</text>
+                            <text x="93" y="240" text-anchor="middle" font-size="10" font-weight="extrabold" fill="#dc2626">N₃ = mg + F·sinα (MAX)</text>
+
+                            <!-- Hình 4: Mặt phẳng nghiêng -->
+                            <rect x="186" y="134" width="162" height="116" rx="8" fill="#f8fafc" stroke="#cbd5e1"/>
+                            <text x="267" y="150" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#334155">Hình 4 (Mặt nghiêng)</text>
+                            <line x1="202" y1="218" x2="332" y2="218" stroke="#0f172a" stroke-width="1.8"/>
+                            <line x1="202" y1="218" x2="325" y2="162" stroke="#0f172a" stroke-width="2"/>
+                            <g transform="translate(262, 182) rotate(-24.5)">
+                                <rect x="-18" y="-12" width="36" height="20" fill="#fbbf24" stroke="#92400e" stroke-width="1.5"/>
+                                <line x1="0" y1="-2" x2="48" y2="-2" stroke="#dc2626" stroke-width="2.3" marker-end="url(#arrC)"/>
+                            </g>
+                            <text x="267" y="240" text-anchor="middle" font-size="10" font-weight="bold" fill="#475569">N₄ = mg·cosα</text>
+                        </svg>`
+                    };
+
+                case 'svg_4_pull_upward_angle':
+                    return {
+                        heading: "SVG 4: Kéo vật bằng lực F⃗ hướng chếch lên góc α (N = mg − F·sinα)",
+                        caption: "Đường gióng nét đứt chiếu F⃗ lên Ox (Fx = F·cosα) và Oy (Fy = F·sinα hướng lên). Vì Fy đỡ bớt một phần trọng lực nên áp lực giảm: N = mg − F·sinα.",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrU1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrUR" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                                <marker id="arrUG" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#059669"/>
+                                </marker>
+                                <marker id="arrUD" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt sàn ngang -->
+                            <rect x="20" y="172" width="320" height="12" fill="#cbd5e1"/>
+                            <line x1="20" y1="172" x2="340" y2="172" stroke="#334155" stroke-width="2.5"/>
+
+                            <!-- Hệ trục tọa độ Ox, Oy nét đứt tại tâm O(155, 138) -->
+                            <line x1="35" y1="138" x2="335" y2="138" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrUD)"/>
+                            <line x1="155" y1="225" x2="155" y2="20" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrUD)"/>
+                            <text x="328" y="128" font-size="12" font-weight="extrabold" fill="#0f172a">x</text>
+                            <text x="166" y="30" font-size="12" font-weight="extrabold" fill="#0f172a">y</text>
+
+                            <!-- Khối vật m -->
+                            <rect x="110" y="104" width="90" height="68" rx="4" fill="#fed7aa" stroke="#b45309" stroke-width="2"/>
+
+                            <!-- ĐƯỜNG GIÓNG HÌNH CHỮ NHẬT PHÂN TÍCH F(265, 68) -->
+                            <line x1="265" y1="68" x2="265" y2="138" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4,3"/>
+                            <line x1="155" y1="68" x2="265" y2="68" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4,3"/>
+
+                            <!-- Thành phần Fx và Fy -->
+                            <line x1="155" y1="138" x2="262" y2="138" stroke="#2563eb" stroke-width="3" marker-end="url(#arrU1)"/>
+                            <text x="262" y="156" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#1d4ed8">F⃗ₓ = F·cosα</text>
+
+                            <line x1="155" y1="138" x2="155" y2="70" stroke="#2563eb" stroke-width="2.8" marker-end="url(#arrU1)"/>
+                            <text x="128" y="82" font-size="13" font-weight="extrabold" fill="#1d4ed8">F⃗ᵧ</text>
+
+                            <!-- Vectơ F kéo chếch lên -->
+                            <line x1="155" y1="138" x2="262" y2="70" stroke="#dc2626" stroke-width="3.2" marker-end="url(#arrUR)"/>
+                            <text x="278" y="68" font-size="14" font-weight="extrabold" fill="#dc2626">F⃗</text>
+
+                            <!-- Cung góc alpha -->
+                            <path d="M 195 138 A 40 40 0 0 0 189 116" fill="none" stroke="#dc2626" stroke-width="2"/>
+                            <text x="204" y="130" font-size="13" font-weight="extrabold" fill="#dc2626">α</text>
+
+                            <!-- Phản lực N, Trọng lực P và Ma sát Fms -->
+                            <line x1="155" y1="138" x2="155" y2="42" stroke="#059669" stroke-width="2.6" marker-end="url(#arrUG)"/>
+                            <text x="135" y="48" font-size="13" font-weight="extrabold" fill="#047857">N⃗</text>
+
+                            <line x1="155" y1="138" x2="155" y2="215" stroke="#0f172a" stroke-width="2.8" marker-end="url(#arrUD)"/>
+                            <text x="172" y="215" font-size="13" font-weight="extrabold" fill="#0f172a">P⃗</text>
+
+                            <line x1="130" y1="172" x2="48" y2="172" stroke="#2563eb" stroke-width="3" marker-end="url(#arrU1)"/>
+                            <text x="72" y="194" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#1d4ed8">F⃗ms</text>
+
+                            <circle cx="155" cy="138" r="4" fill="#0f172a"/>
+                            <text x="180" y="244" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#1e3a8a">• Oy: N = mg − F·sinα &nbsp;• Ox: F·cosα − μ(mg − F·sinα) = m·a</text>
+                        </svg>`
+                    };
+
+                case 'svg_5_push_downward_angle':
+                    return {
+                        heading: "SVG 5: Đẩy hòm bằng lực F⃗ hướng chếch xuống góc α (N = mg + F·sinα)",
+                        caption: "Đường gióng nét đứt chiếu F⃗ xuống Ox (Fx = F·cosα) và Oy âm (Fy = F·sinα hướng xuống). Vì Fy ép thêm vào sàn nên áp lực tăng: N = mg + F·sinα.",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrD1" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrDR" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                                <marker id="arrDG" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#059669"/>
+                                </marker>
+                                <marker id="arrDD" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt sàn ngang -->
+                            <rect x="20" y="148" width="320" height="12" fill="#cbd5e1"/>
+                            <line x1="20" y1="148" x2="340" y2="148" stroke="#334155" stroke-width="2.5"/>
+
+                            <!-- Hệ trục tọa độ Ox, Oy tại O(150, 120) -->
+                            <line x1="30" y1="120" x2="335" y2="120" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrDD)"/>
+                            <line x1="150" y1="225" x2="150" y2="18" stroke="#64748b" stroke-width="1.4" stroke-dasharray="4,3" marker-end="url(#arrDD)"/>
+                            <text x="328" y="110" font-size="12" font-weight="extrabold" fill="#0f172a">x</text>
+                            <text x="162" y="28" font-size="12" font-weight="extrabold" fill="#0f172a">y</text>
+
+                            <!-- Hòm gỗ m = 40 kg -->
+                            <rect x="108" y="92" width="84" height="56" rx="4" fill="#fbbf24" stroke="#92400e" stroke-width="2"/>
+
+                            <!-- ĐƯỜNG GIÓNG NÉT ĐỨT TỪ MÚT F(265, 182) -->
+                            <line x1="265" y1="120" x2="265" y2="182" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4,3"/>
+                            <line x1="150" y1="182" x2="265" y2="182" stroke="#dc2626" stroke-width="1.6" stroke-dasharray="4,3"/>
+
+                            <!-- Thành phần Fx và Fy (hướng xuống) -->
+                            <line x1="150" y1="120" x2="262" y2="120" stroke="#2563eb" stroke-width="2.8" marker-end="url(#arrD1)"/>
+                            <text x="255" y="108" font-size="12" font-weight="extrabold" fill="#1d4ed8">F⃗ₓ = F·cosα</text>
+
+                            <line x1="150" y1="120" x2="150" y2="180" stroke="#2563eb" stroke-width="2.8" marker-end="url(#arrD1)"/>
+                            <text x="122" y="176" font-size="12" font-weight="extrabold" fill="#1d4ed8">F⃗ᵧ</text>
+
+                            <!-- Vectơ F đẩy chếch xuống góc alpha = 30° -->
+                            <line x1="150" y1="120" x2="262" y2="180" stroke="#dc2626" stroke-width="3.2" marker-end="url(#arrDR)"/>
+                            <text x="280" y="188" font-size="14" font-weight="extrabold" fill="#dc2626">F⃗</text>
+                            <path d="M 192 120 A 42 42 0 0 1 187 140" fill="none" stroke="#0f172a" stroke-width="1.8"/>
+                            <text x="202" y="138" font-size="12" font-weight="extrabold" fill="#0f172a">α</text>
+
+                            <!-- Phản lực N lớn hướng lên, P hướng xuống, Fms sang trái -->
+                            <line x1="150" y1="120" x2="150" y2="30" stroke="#059669" stroke-width="3.2" marker-end="url(#arrDG)"/>
+                            <text x="128" y="44" font-size="14" font-weight="extrabold" fill="#047857">N⃗</text>
+
+                            <line x1="150" y1="120" x2="150" y2="215" stroke="#0f172a" stroke-width="2.8" marker-end="url(#arrDD)"/>
+                            <text x="166" y="215" font-size="13" font-weight="extrabold" fill="#0f172a">P⃗</text>
+
+                            <line x1="115" y1="148" x2="38" y2="148" stroke="#dc2626" stroke-width="3" marker-end="url(#arrDR)"/>
+                            <text x="65" y="172" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#dc2626">F⃗ms</text>
+
+                            <circle cx="150" cy="120" r="4" fill="#0f172a"/>
+                            <text x="180" y="244" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#991b1b">• Oy: N = mg + F·sinα &nbsp;• Ox: F·cosα − μ(mg + F·sinα) = m·a</text>
+                        </svg>`
+                    };
+
+                case 'svg_6_incline_slope':
+                    return {
+                        heading: "SVG 6: Phân tích Lực trên Mặt phẳng nghiêng góc α = 30°",
+                        caption: "Đường gióng nét đứt phân tích P⃗ thành P⃗ₓ (song song mặt nghiêng, Px = mg·sinα) và P⃗ᵧ (vuông góc mặt nghiêng, Py = mg·cosα). Áp lực lên mặt nghiêng là N = Py = mg·cosα.",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrInR" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                                <marker id="arrInB" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrInG" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#059669"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt phẳng nghiêng góc alpha = 30° -->
+                            <polygon points="35,205 325,205 325,55" fill="#eff6ff" stroke="#1d4ed8" stroke-width="2.5"/>
+                            <path d="M 85 205 A 50 50 0 0 0 79 182" fill="none" stroke="#dc2626" stroke-width="2"/>
+                            <text x="95" y="198" font-size="12" font-weight="extrabold" fill="#dc2626">α = 30°</text>
+
+                            <!-- Vật đặt tại O(185, 127) trên mặt dốc nghiêng -27.3 độ -->
+                            <g transform="translate(185, 127) rotate(-27.3)">
+                                <rect x="-28" y="-22" width="56" height="22" rx="3" fill="#f97316" stroke="#7c2d12" stroke-width="2"/>
+                                <!-- Hệ trục tọa độ Ox, Oy nét đứt -->
+                                <line x1="-115" y1="-11" x2="115" y2="-11" stroke="#64748b" stroke-width="1.3" stroke-dasharray="4,3"/>
+                                <line x1="0" y1="75" x2="0" y2="-85" stroke="#64748b" stroke-width="1.3" stroke-dasharray="4,3"/>
+                                <!-- Phản lực N hướng vuông góc mặt dốc lên -->
+                                <line x1="0" y1="-11" x2="0" y2="-75" stroke="#2563eb" stroke-width="2.8" marker-end="url(#arrInB)"/>
+                                <!-- Thành phần Py vuông góc mặt dốc xuống -->
+                                <line x1="0" y1="-11" x2="0" y2="54" stroke="#2563eb" stroke-width="2.6" marker-end="url(#arrInB)"/>
+                                <!-- Thành phần Px song song mặt dốc hướng xuống -->
+                                <line x1="0" y1="-11" x2="-38" y2="-11" stroke="#2563eb" stroke-width="2.8" marker-end="url(#arrInB)"/>
+                                <!-- Đường gióng nét đứt hình chữ nhật phân tích P -->
+                                <line x1="-38" y1="-11" x2="-38" y2="54" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3"/>
+                                <line x1="0" y1="54" x2="-38" y2="54" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="3,3"/>
+                                <!-- Lực ma sát fms dọc mặt dốc hướng lên -->
+                                <line x1="0" y1="0" x2="62" y2="0" stroke="#dc2626" stroke-width="3" marker-end="url(#arrInR)"/>
+                            </g>
+
+                            <!-- Vectơ Trọng lực P thẳng đứng hướng xuống -->
+                            <circle cx="180" cy="117" r="4" fill="#dc2626"/>
+                            <line x1="180" y1="117" x2="180" y2="190" stroke="#059669" stroke-width="3" marker-end="url(#arrInG)"/>
+                            <text x="162" y="192" font-size="14" font-weight="extrabold" fill="#047857">P⃗</text>
+                            <text x="132" y="65" font-size="14" font-weight="extrabold" fill="#1d4ed8">N⃗</text>
+                            <text x="128" y="142" font-size="13" font-weight="extrabold" fill="#1d4ed8">P⃗ₓ</text>
+                            <text x="218" y="170" font-size="13" font-weight="extrabold" fill="#1d4ed8">P⃗ᵧ</text>
+                            <text x="242" y="88" font-size="13" font-weight="extrabold" fill="#dc2626">F⃗ms (hoặc F⃗)</text>
+
+                            <text x="180" y="238" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#1e3a8a">• Px = mg·sinα &nbsp;• N = Py = mg·cosα &nbsp;• Fmst = μ·mg·cosα</text>
+                        </svg>`
+                    };
+
+                case 'svg_7_ski_hill':
+                    return {
+                        heading: "SVG 7: Vận động viên Trượt tuyết từ đỉnh đồi A xuống B rồi dừng tại C",
+                        caption: "Đường gióng độ cao h = 25 m và dốc AB = 50 m ⇒ sinα = 25/50 = 0,5 ⇒ α = 30°. Trên dốc AB (μ = 0,05): a = g(sin30° - μcos30°). Trên đoạn ngang BC (μ' = 0,1): a' = -μ'g.",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrSk" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#2563eb"/>
+                                </marker>
+                                <marker id="arrSkR" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                            <!-- Nền trời & Đồi tuyết -->
+                            <polygon points="45,55 215,185 45,185" fill="#e0f2fe" stroke="#0284c7" stroke-width="2.5"/>
+                            <line x1="215" y1="185" x2="342" y2="185" stroke="#0284c7" stroke-width="3"/>
+
+                            <!-- Đường gióng độ cao h = 25 m tại đỉnh A -->
+                            <line x1="45" y1="55" x2="45" y2="185" stroke="#0284c7" stroke-width="2" stroke-dasharray="4,3"/>
+                            <text x="24" y="125" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#0369a1">h=25m</text>
+                            <text x="45" y="44" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#0f172a">A (v_A = 0)</text>
+
+                            <!-- Góc nghiêng 30° tại chân đồi B -->
+                            <path d="M 175 185 A 40 40 0 0 0 183 161" fill="none" stroke="#dc2626" stroke-width="2"/>
+                            <text x="155" y="178" font-size="11" font-weight="extrabold" fill="#dc2626">30°</text>
+                            <circle cx="215" cy="185" r="4.5" fill="#0f172a"/>
+                            <text x="215" y="205" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#0f172a">B (v_B)</text>
+
+                            <!-- Điểm dừng C -->
+                            <circle cx="328" cy="185" r="4.5" fill="#dc2626"/>
+                            <text x="328" y="205" text-anchor="middle" font-size="13" font-weight="extrabold" fill="#dc2626">C (v_C = 0)</text>
+
+                            <!-- Vận động viên trên dốc AB (L = 50 m) -->
+                            <g transform="translate(125, 116) rotate(37.4)">
+                                <line x1="-18" y1="0" x2="18" y2="0" stroke="#1e293b" stroke-width="3.5" stroke-linecap="round"/>
+                                <circle cx="0" cy="-18" r="5" fill="#f59e0b"/>
+                                <line x1="0" y1="-13" x2="0" y2="0" stroke="#0284c7" stroke-width="3"/>
+                                <line x1="0" y1="-6" x2="42" y2="-6" stroke="#2563eb" stroke-width="2.5" marker-end="url(#arrSk)"/>
+                                <line x1="0" y1="0" x2="-35" y2="0" stroke="#dc2626" stroke-width="2.5" marker-end="url(#arrSkR)"/>
+                            </g>
+                            <text x="155" y="88" font-size="11" font-weight="extrabold" fill="#1d4ed8">AB = 50 m (μ = 0,05)</text>
+                            <text x="275" y="172" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#b91c1c">BC: μ' = 0,1</text>
+
+                            <text x="180" y="238" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#0f172a">• Dốc AB: a ≈ 4,6 m/s², v_B ≈ 21,4 m/s • Ngang BC: a' = −1 m/s²</text>
+                        </svg>`
+                    };
+
+                case 'svg_8_two_blocks_connected':
+                    return {
+                        heading: "SVG 8: Hệ hai vật A (m₁) và B (m₂) nối bằng dây trên mặt ngang có ma sát",
+                        caption: "Đường gióng hệ trục Oxy tại mỗi vật: Cả hệ chịu lực kéo F và hai lực ma sát Fms₁ = μm₁g, Fms₂ = μm₂g ⇒ Gia tốc chung a = F/(m₁ + m₂) − μg. Xét riêng vật sau: T − Fms₁ = m₁·a.",
+                        svg: `
+                        <svg viewBox="0 0 360 250" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrT8" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                                <marker id="arrF8" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt sàn ngang -->
+                            <rect x="15" y="162" width="330" height="12" fill="#93c5fd"/>
+                            <line x1="15" y1="162" x2="345" y2="162" stroke="#1e3a8a" stroke-width="2.5"/>
+
+                            <!-- Hệ trục tọa độ nét đứt qua 2 vật -->
+                            <line x1="20" y1="130" x2="345" y2="130" stroke="#475569" stroke-width="1.3" stroke-dasharray="3,3" marker-end="url(#arrF8)"/>
+                            <line x1="85" y1="215" x2="85" y2="30" stroke="#475569" stroke-width="1.3" stroke-dasharray="3,3" marker-end="url(#arrF8)"/>
+                            <line x1="235" y1="215" x2="235" y2="30" stroke="#475569" stroke-width="1.3" stroke-dasharray="3,3" marker-end="url(#arrF8)"/>
+
+                            <!-- Vật 1 (A) bên trái -->
+                            <rect x="52" y="96" width="66" height="66" rx="4" fill="#fed7aa" stroke="#b45309" stroke-width="2"/>
+                            <text x="85" y="88" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#78350f">Vật 1 (m₁)</text>
+                            <line x1="85" y1="130" x2="85" y2="52" stroke="#0f172a" stroke-width="2.4" marker-end="url(#arrF8)"/>
+                            <text x="102" y="58" font-size="12" font-weight="extrabold">N⃗₁</text>
+                            <line x1="85" y1="130" x2="85" y2="205" stroke="#0f172a" stroke-width="2.4" marker-end="url(#arrF8)"/>
+                            <text x="102" y="205" font-size="12" font-weight="extrabold">P⃗₁</text>
+                            <line x1="75" y1="162" x2="25" y2="162" stroke="#0f172a" stroke-width="2.6" marker-end="url(#arrF8)"/>
+                            <text x="42" y="185" font-size="11" font-weight="extrabold">F⃗ms₁</text>
+
+                            <!-- Dây nối và cặp lực căng T1, T2 -->
+                            <line x1="118" y1="130" x2="205" y2="130" stroke="#334155" stroke-width="2"/>
+                            <line x1="118" y1="130" x2="155" y2="130" stroke="#dc2626" stroke-width="3" marker-end="url(#arrT8)"/>
+                            <text x="138" y="118" text-anchor="middle" font-size="12" font-weight="extrabold" fill="#dc2626">T⃗₁</text>
+                            <line x1="205" y1="130" x2="168" y2="130" stroke="#dc2626" stroke-width="3" marker-end="url(#arrT8)"/>
+                            <text x="186" y="118" text-anchor="middle" font-size="12" font-weight="extrabold" fill="#dc2626">T⃗₂</text>
+
+                            <!-- Vật 2 (B) bên phải -->
+                            <rect x="205" y="102" width="60" height="60" rx="4" fill="#fed7aa" stroke="#b45309" stroke-width="2"/>
+                            <text x="235" y="94" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#78350f">Vật 2 (m₂)</text>
+                            <line x1="235" y1="130" x2="235" y2="62" stroke="#0f172a" stroke-width="2.4" marker-end="url(#arrF8)"/>
+                            <text x="250" y="68" font-size="12" font-weight="extrabold">N⃗₂</text>
+                            <line x1="235" y1="130" x2="235" y2="198" stroke="#0f172a" stroke-width="2.4" marker-end="url(#arrF8)"/>
+                            <text x="250" y="198" font-size="12" font-weight="extrabold">P⃗₂</text>
+                            <line x1="225" y1="162" x2="178" y2="162" stroke="#0f172a" stroke-width="2.6" marker-end="url(#arrF8)"/>
+                            <text x="192" y="185" font-size="11" font-weight="extrabold">F⃗ms₂</text>
+
+                            <!-- Lực kéo F -->
+                            <line x1="265" y1="130" x2="328" y2="130" stroke="#0f172a" stroke-width="3.2" marker-end="url(#arrF8)"/>
+                            <text x="305" y="116" text-anchor="middle" font-size="13" font-weight="extrabold">F⃗</text>
+
+                            <text x="180" y="238" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#1e3a8a">a = F/(m₁ + m₂) − μg &nbsp;•&nbsp; T = m₁(a + μg)</text>
+                        </svg>`
+                    };
+
+                case 'svg_9_pulley_table':
+                default:
+                    return {
+                        heading: "SVG 9: Hệ hai vật m₁ (treo thẳng đứng) & m₂ (trên mặt bàn ngang) qua Ròng rọc",
+                        caption: "Vật m₁ đi xuống kéo m₂ trượt ngang: a = (P₁ − Fms₂)/(m₁ + m₂) = (m₁g − μm₂g)/(m₁ + m₂); Lực căng T = m₁(g − a); Lực nén lên trục ròng rọc R = √(T₁'² + T₂'²) = T√2.",
+                        svg: `
+                        <svg viewBox="0 0 360 255" class="w-full max-w-[345px] h-auto">
+                            <defs>
+                                <marker id="arrP9" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#0f172a"/>
+                                </marker>
+                                <marker id="arrR9" markerWidth="7" markerHeight="7" refX="5" refY="3.5" orient="auto">
+                                    <polygon points="0 0, 7 3.5, 0 7" fill="#dc2626"/>
+                                </marker>
+                            </defs>
+                            <!-- Mặt bàn ngang & Cạnh bàn thẳng đứng -->
+                            <rect x="25" y="105" width="215" height="14" fill="#fdba74" stroke="#c2410c" stroke-width="1.5"/>
+                            <rect x="226" y="105" width="14" height="135" fill="#fdba74" stroke="#c2410c" stroke-width="1.5"/>
+
+                            <!-- Ròng rọc tại góc bàn (252, 92) -->
+                            <line x1="238" y1="106" x2="252" y2="92" stroke="#0f172a" stroke-width="3"/>
+                            <circle cx="252" cy="92" r="14" fill="#facc15" stroke="#0f172a" stroke-width="2"/>
+                            <circle cx="252" cy="92" r="5" fill="#0f172a"/>
+
+                            <!-- Khối m2 = 3 kg trên mặt bàn -->
+                            <rect x="65" y="57" width="56" height="48" rx="4" fill="#fed7aa" stroke="#9a3412" stroke-width="2"/>
+                            <text x="93" y="48" text-anchor="middle" font-size="12" font-weight="extrabold" fill="#0f172a">m₂ (3kg)</text>
+                            <line x1="93" y1="81" x2="93" y2="18" stroke="#0f172a" stroke-width="2.2" marker-end="url(#arrP9)"/>
+                            <text x="108" y="28" font-size="11" font-weight="extrabold">N⃗₂</text>
+                            <line x1="93" y1="81" x2="93" y2="145" stroke="#0f172a" stroke-width="2.2" marker-end="url(#arrP9)"/>
+                            <text x="108" y="145" font-size="11" font-weight="extrabold">P⃗₂</text>
+                            <line x1="65" y1="105" x2="22" y2="105" stroke="#0f172a" stroke-width="2.5" marker-end="url(#arrP9)"/>
+                            <text x="36" y="132" font-size="11" font-weight="extrabold">F⃗ms₂</text>
+
+                            <!-- Dây ngang nối m2 với ròng rọc -->
+                            <line x1="121" y1="78" x2="252" y2="78" stroke="#0f172a" stroke-width="2"/>
+                            <line x1="121" y1="78" x2="162" y2="78" stroke="#dc2626" stroke-width="2.8" marker-end="url(#arrR9)"/>
+                            <text x="145" y="68" font-size="11" font-weight="extrabold" fill="#dc2626">T⃗₂</text>
+                            <line x1="252" y1="78" x2="212" y2="78" stroke="#dc2626" stroke-width="2.8" marker-end="url(#arrR9)"/>
+                            <text x="222" y="68" font-size="11" font-weight="extrabold" fill="#dc2626">T⃗₂'</text>
+
+                            <!-- Dây thẳng đứng nối ròng rọc với quả cầu m1 = 1 kg -->
+                            <line x1="266" y1="92" x2="266" y2="185" stroke="#0f172a" stroke-width="2"/>
+                            <line x1="266" y1="92" x2="266" y2="132" stroke="#dc2626" stroke-width="2.8" marker-end="url(#arrR9)"/>
+                            <text x="282" y="122" font-size="11" font-weight="extrabold" fill="#dc2626">T⃗₁'</text>
+                            <line x1="266" y1="175" x2="266" y2="142" stroke="#dc2626" stroke-width="2.8" marker-end="url(#arrR9)"/>
+                            <text x="282" y="158" font-size="11" font-weight="extrabold" fill="#dc2626">T⃗₁</text>
+
+                            <!-- Quả cầu m1 -->
+                            <circle cx="266" cy="195" r="18" fill="#86efac" stroke="#15803d" stroke-width="2"/>
+                            <text x="305" y="198" font-size="12" font-weight="extrabold" fill="#0f172a">m₁ (1kg)</text>
+                            <line x1="266" y1="195" x2="266" y2="242" stroke="#0f172a" stroke-width="2.5" marker-end="url(#arrP9)"/>
+                            <text x="282" y="242" font-size="11" font-weight="extrabold">P⃗₁</text>
+
+                            <!-- Hình nhỏ góc dưới trái: Tổng hợp lực nén R = T√2 lên trục ròng rọc -->
+                            <rect x="28" y="156" width="175" height="72" rx="6" fill="#f8fafc" stroke="#cbd5e1"/>
+                            <text x="115" y="174" text-anchor="middle" font-size="10.5" font-weight="extrabold" fill="#1e3a8a">Lực nén lên trục ròng rọc:</text>
+                            <text x="115" y="194" text-anchor="middle" font-size="11" font-weight="extrabold" fill="#dc2626">T⃗₁' ⊥ T⃗₂' (T₁' = T₂' = T)</text>
+                            <text x="115" y="214" text-anchor="middle" font-size="12" font-weight="extrabold" fill="#047857">⇒ R = √(T² + T²) = T√2</text>
+                        </svg>`
+                    };
+            }
+        }
+
+        /**************************************************************************
+         * 3. NGÂN HÀNG 22 CÂU HỎI BÁM SÁT TÀI LIỆU "CHỦ ĐỀ 18: LỰC MA SÁT"
+         * - Cấp độ 1 (12 câu): Nhận biết đơn giản, nhớ lý thuyết, công thức, tính 1 bước
+         * - Cấp độ 2 (5 câu): Mức 7-8 điểm (Vận dụng cơ bản)
+         * - Cấp độ 3 (5 câu): Mức 9-10 điểm (Kéo/đẩy xiên góc, trượt tuyết, hệ vật)
+         **************************************************************************/
+        const QUESTION_BANK = {
+            1: [
+                {
+                    id: "B18_L1_01",
+                    category: "Nhận biết • Công thức lực ma sát trượt",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Gọi μ<sub>t</sub> là hệ số ma sát trượt và <span class="math-var">N</span> là độ lớn áp lực (phản lực pháp tuyến) giữa hai bề mặt tiếp xúc. Công thức tính <strong>độ lớn của lực ma sát trượt <span class="math-var">F</span><sub>mst</sub></strong> là:`,
+                    options: [
+                        `<span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="math-var">N</span>`,
+                        `<span class="math-var">F</span><sub>mst</sub> = <span class="frac"><span class="num"><span class="math-var">N</span></span><span class="den">μ<sub>t</sub></span></span>`,
+                        `<span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="math-var">N</span><sup>2</sup>`,
+                        `<span class="vec">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="vec">N</span>`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Độ lớn của lực ma sát trượt tỉ lệ thuận với độ lớn của áp lực giữa hai mặt tiếp xúc theo công thức: <strong><span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="math-var">N</span></strong> (Lưu ý: Không viết dấu vectơ <span class="vec">F</span><sub>mst</sub> = μ<sub>t</sub><span class="vec">N</span> vì <span class="vec">F</span><sub>mst</sub> vuông góc với <span class="vec">N</span>).`
+                },
+                {
+                    id: "B18_L1_02",
+                    category: "Nhận biết • Đặc điểm độ lớn của lực ma sát trượt",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Khi một vật trượt trên một mặt phẳng, phát biểu nào sau đây về <strong>độ lớn của lực ma sát trượt</strong> là <strong>SAI</strong>?`,
+                    options: [
+                        `Phụ thuộc vào diện tích tiếp xúc của vật với mặt phẳng đó.`,
+                        `Không phụ thuộc vào tốc độ chuyển động của vật.`,
+                        `Tỉ lệ thuận với độ lớn của áp lực vuông góc lên mặt tiếp xúc.`,
+                        `Phụ thuộc vào vật liệu và tình trạng của hai mặt tiếp xúc.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Theo kết quả thực nghiệm (Bài 18): Độ lớn của lực ma sát trượt <strong>KHÔNG phụ thuộc vào diện tích tiếp xúc và tốc độ của vật</strong>, mà chỉ tỉ lệ với độ lớn áp lực <span class="math-var">N</span> và phụ thuộc vào bản chất, tình trạng của hai bề mặt tiếp xúc.`
+                },
+                {
+                    id: "B18_L1_03",
+                    category: "Nhận biết • Bản chất của Hệ số ma sát trượt μt",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Khi nói về <strong>hệ số ma sát trượt μ<sub>t</sub></strong> giữa hai mặt tiếp xúc, nhận định nào sau đây là <strong>ĐÚNG</strong>?`,
+                    options: [
+                        `Phụ thuộc vào vật liệu và tình trạng của hai mặt tiếp xúc, và không có đơn vị.`,
+                        `Có đơn vị là Newton trên mét (N/m) và tỉ lệ thuận với khối lượng của vật.`,
+                        `Tăng lên khi ta tăng lực ép vuông góc (áp lực <span class="math-var">N</span>) giữa hai mặt tiếp xúc.`,
+                        `Phụ thuộc vào diện tích bề mặt tiếp xúc giữa hai vật.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Hệ số ma sát trượt μ<sub>t</sub> = <span class="frac"><span class="num"><span class="math-var">F</span><sub>mst</sub></span><span class="den"><span class="math-var">N</span></span></span> là tỉ số giữa hai lực nên <strong>không có đơn vị</strong>. Giá trị của μ<sub>t</sub> chỉ phụ thuộc vào vật liệu và tình trạng (khô, ướt, nhẵn, nhám) của hai mặt tiếp xúc, hoàn toàn <strong>không phụ thuộc vào áp lực <span class="math-var">N</span> hay diện tích tiếp xúc</strong>.`
+                },
+                {
+                    id: "B18_L1_04",
+                    category: "Nhận biết • Chiều của lực ma sát trượt",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Lực ma sát trượt <span class="vec">F</span><sub>mst</sub> tác dụng lên vật luôn có phương tiếp tuyến với mặt tiếp xúc tại điểm tiếp xúc và có chiều:`,
+                    options: [
+                        `Ngược chiều với vận tốc (chiều chuyển động tương đối) của vật.`,
+                        `Cùng chiều với vận tốc của vật.`,
+                        `Ngược chiều với gia tốc của vật trong mọi trường hợp.`,
+                        `Vuông góc với mặt phẳng tiếp xúc.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Lực ma sát trượt luôn cản trở chuyển động trượt tương đối của vật trên bề mặt nên có chiều <strong>luôn ngược chiều với chiều chuyển động (ngược chiều vectơ vận tốc <span class="vec">v</span>)</strong> của vật.`
+                },
+                {
+                    id: "B18_L1_05",
+                    category: "Nhận biết • Đặc điểm và vai trò của Lực ma sát nghỉ",
+                    diagram: "svg_2_friction_graph",
+                    prompt: `Khi nói về <strong>lực ma sát nghỉ <span class="vec">F</span><sub>msn</sub></strong>, phát biểu nào sau đây là <strong>SAI</strong>?`,
+                    options: [
+                        `Lực ma sát nghỉ là một lực luôn có hại trong đời sống và kĩ thuật.`,
+                        `Có hướng ngược với hướng của lực tác dụng song song mặt tiếp xúc gây ra xu hướng chuyển động.`,
+                        `Khi vật còn chưa trượt, độ lớn của lực ma sát nghỉ bằng độ lớn của thành phần lực tác dụng song song với mặt tiếp xúc.`,
+                        `Đối với người đi bộ, xe cộ chạy trên đường, lực ma sát nghỉ đóng vai trò là lực phát động.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Trong đời sống, <strong>lực ma sát nghỉ có vai trò vô cùng có ích</strong>: nhờ ma sát nghỉ ta mới cầm nắm được đồ vật, đinh mới giữ chặt trong tường, người và xe cộ mới đi lại được mà không bị trượt (đóng vai trò lực phát động). Do đó nói ma sát nghỉ "luôn có hại" là <strong>SAI</strong>.`
+                },
+                {
+                    id: "B18_L1_06",
+                    category: "Thông hiểu • Thay đổi diện tích mặt tiếp xúc",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Một khúc gỗ hình hộp chữ nhật trượt có ma sát trên một mặt bàn nằm ngang đồng chất. Nếu ta lật khúc gỗ sang một mặt tiếp xúc khác có <strong>diện tích tiếp xúc giảm đi 3 lần</strong> (tình trạng bề mặt không đổi) thì độ lớn lực ma sát trượt tác dụng lên khúc gỗ sẽ:`,
+                    options: [
+                        `Không thay đổi.`,
+                        `Giảm đi 3 lần.`,
+                        `Tăng lên 3 lần.`,
+                        `Giảm đi 9 lần.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Vì độ lớn của lực ma sát trượt (<span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub><span class="math-var">N</span> = μ<sub>t</sub><span class="math-var">m</span><span class="math-var">g</span>) <strong>không phụ thuộc vào diện tích tiếp xúc</strong> nên khi giảm diện tích tiếp xúc 3 lần, độ lớn lực ma sát trượt vẫn <strong>không thay đổi</strong>.`
+                },
+                {
+                    id: "B18_L1_07",
+                    category: "Nhận biết • Đọc đồ thị Lực ma sát Fms theo Lực kéo Fk",
+                    diagram: "svg_2_friction_graph",
+                    prompt: `Quan sát đồ thị biểu diễn độ lớn lực ma sát <span class="math-var">F</span><sub>ms</sub> theo lực kéo ngang <span class="math-var">F</span><sub>k</sub> tác dụng lên một vật (Hình SVG 2). Dựa vào các đường gióng nét đứt trên đồ thị, hãy xác định <strong>độ lớn lực ma sát nghỉ khi <span class="math-var">F</span><sub>k</sub> = 6 N</strong>, <strong>lực ma sát nghỉ cực đại</strong> và <strong>lực ma sát trượt</strong> khi vật đã trượt:`,
+                    options: [
+                        `Khi <span class="math-var">F</span><sub>k</sub> = 6 N thì <span class="math-var">F</span><sub>msn</sub> = 6 N; <span class="math-var">F</span><sub>msn max</sub> = 12 N; <span class="math-var">F</span><sub>mst</sub> = 9 N.`,
+                        `Khi <span class="math-var">F</span><sub>k</sub> = 6 N thì <span class="math-var">F</span><sub>msn</sub> = 9 N; <span class="math-var">F</span><sub>msn max</sub> = 12 N; <span class="math-var">F</span><sub>mst</sub> = 12 N.`,
+                        `Khi <span class="math-var">F</span><sub>k</sub> = 6 N thì <span class="math-var">F</span><sub>msn</sub> = 12 N; <span class="math-var">F</span><sub>msn max</sub> = 9 N; <span class="math-var">F</span><sub>mst</sub> = 6 N.`,
+                        `Khi <span class="math-var">F</span><sub>k</sub> = 6 N thì <span class="math-var">F</span><sub>msn</sub> = 0 N; <span class="math-var">F</span><sub>msn max</sub> = 12 N; <span class="math-var">F</span><sub>mst</sub> = 9 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Nhìn các đường gióng nét đứt trên đồ thị SVG 2:<br>• Khi <span class="math-var">F</span><sub>k</sub> = 6 N (&lt; 12 N): vật chưa trượt nên <strong><span class="math-var">F</span><sub>msn</sub> = <span class="math-var">F</span><sub>k</sub> = 6 N</strong>.<br>• Đỉnh cao nhất của đồ thị là lực ma sát nghỉ cực đại: <strong><span class="math-var">F</span><sub>msn max</sub> = 12 N</strong>.<br>• Khi <span class="math-var">F</span><sub>k</sub> &gt; 12 N vật bắt đầu trượt, lực ma sát giảm xuống giá trị không đổi <strong><span class="math-var">F</span><sub>mst</sub> = 9 N</strong> (&lt; <span class="math-var">F</span><sub>msn max</sub>).`
+                },
+                {
+                    id: "B18_L1_08",
+                    category: "Thông hiểu • So sánh 4 hình kéo/đẩy tìm lực ma sát lớn nhất",
+                    diagram: "svg_3_four_cases_compare",
+                    prompt: `Một vật có khối lượng <span class="math-var">m</span> trượt trên các bề mặt có cùng hệ số ma sát trượt μ dưới tác dụng của lực <span class="vec">F</span> có cùng độ lớn như trong <strong>Hình 1, Hình 2, Hình 3, Hình 4</strong> (xem Hình SVG 3). Vật chịu tác dụng của <strong>lực ma sát trượt lớn nhất</strong> ở hình nào?`,
+                    options: [
+                        `Hình 3 (Lực đẩy <span class="vec">F</span> hướng chếch xuống dưới: <span class="math-var">F</span><sub>mst</sub> = μ(<span class="math-var">m</span><span class="math-var">g</span> + <span class="math-var">F</span>sinα)).`,
+                        `Hình 1 (Lực kéo <span class="vec">F</span> nằm ngang: <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">m</span><span class="math-var">g</span>).`,
+                        `Hình 2 (Lực kéo <span class="vec">F</span> hướng chếch lên trên: <span class="math-var">F</span><sub>mst</sub> = μ(<span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sinα)).`,
+                        `Hình 4 (Vật trượt trên mặt phẳng nghiêng: <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">m</span><span class="math-var">g</span>cosα).`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Ta có <span class="math-var">F</span><sub>mst</sub> = μ · <span class="math-var">N</span>:<br>• Hình 1: <span class="math-var">N</span><sub>1</sub> = <span class="math-var">m</span><span class="math-var">g</span>.<br>• Hình 2: <span class="math-var">N</span><sub>2</sub> = <span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sinα.<br>• <strong>Hình 3: <span class="math-var">N</span><sub>3</sub> = <span class="math-var">m</span><span class="math-var">g</span> + <span class="math-var">F</span>sinα (Áp lực lớn nhất ⇒ <span class="math-var">F</span><sub>mst</sub> lớn nhất)</strong>.<br>• Hình 4: <span class="math-var">N</span><sub>4</sub> = <span class="math-var">m</span><span class="math-var">g</span>cosα.`
+                },
+                {
+                    id: "B18_L1_09",
+                    category: "Phép tính 1 bước • Đẩy vật trượt thẳng đều",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Một người đẩy một kiện hàng trượt <strong>thẳng đều</strong> trên sàn nhà nằm ngang với một lực đẩy nằm ngang có độ lớn <span class="math-var">F</span> = 300 N. Khi đó, độ lớn của lực ma sát trượt <span class="math-var">F</span><sub>mst</sub> tác dụng lên kiện hàng bằng:`,
+                    options: [
+                        `300 N.`,
+                        `0 N.`,
+                        `150 N.`,
+                        `600 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Vì kiện hàng trượt <strong>thẳng đều</strong> trên mặt sàn ngang nên gia tốc <span class="math-var">a</span> = 0. Theo phương ngang, lực ma sát trượt cân bằng với lực đẩy: <strong><span class="math-var">F</span><sub>mst</sub> = <span class="math-var">F</span> = 300 N</strong>.`
+                },
+                {
+                    id: "B18_L1_10",
+                    category: "Phép tính 1 bước • Tính hệ số ma sát trượt μ",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Kéo một vật nặng có khối lượng <span class="math-var">m</span> = 2 kg bằng một lực nằm ngang <span class="math-var">F</span> = 2 N làm vật trượt <strong>thẳng đều</strong> trên mặt sàn nằm ngang. Lấy <span class="math-var">g</span> = 10 m/s². Hệ số ma sát trượt μ giữa vật và mặt sàn là:`,
+                    options: [
+                        `0,1.`,
+                        `0,2.`,
+                        `0,25.`,
+                        `1,0.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Khi vật trượt thẳng đều trên mặt ngang: <span class="math-var">F</span><sub>mst</sub> = <span class="math-var">F</span> ⇔ μ · <span class="math-var">m</span><span class="math-var">g</span> = <span class="math-var">F</span><br>⇒ <strong>μ = <span class="frac"><span class="num"><span class="math-var">F</span></span><span class="den"><span class="math-var">m</span><span class="math-var">g</span></span></span> = <span class="frac"><span class="num">2</span><span class="den">2 · 10</span></span> = 0,1</strong>.`
+                },
+                {
+                    id: "B18_L1_11",
+                    category: "Phép tính 1 bước • Tính hệ số ma sát trượt (có đổi đơn vị g sang kg)",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Một vật có khối lượng <span class="math-var">m</span> = 400 g đang trượt thẳng đều trên mặt phẳng ngang dưới tác dụng của lực kéo nằm ngang <span class="math-var">F</span> = 0,4 N. Lấy <span class="math-var">g</span> = 10 m/s². Hệ số ma sát trượt μ giữa vật và mặt phẳng ngang bằng:`,
+                    options: [
+                        `0,1.`,
+                        `0,4.`,
+                        `0,01.`,
+                        `0,2.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Đổi đơn vị: <span class="math-var">m</span> = 400 g = 0,4 kg.<br>+ Vì vật trượt thẳng đều nên: <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">m</span><span class="math-var">g</span> = <span class="math-var">F</span> ⇒ <strong>μ = <span class="frac"><span class="num"><span class="math-var">F</span></span><span class="den"><span class="math-var">m</span><span class="math-var">g</span></span></span> = <span class="frac"><span class="num">0,4</span><span class="den">0,4 · 10</span></span> = 0,1</strong>.`
+                },
+                {
+                    id: "B18_L1_12",
+                    category: "Nhận biết • Lực ma sát nghỉ trên mặt phẳng nghiêng",
+                    diagram: "svg_6_incline_slope",
+                    prompt: `Một xe ô tô có khối lượng <span class="math-var">m</span> = 5 tấn đang đỗ <strong>đứng yên</strong> trên một đoạn dốc nghiêng góc α = 30° so với mặt ngang (Hình SVG 6). Độ lớn của lực ma sát nghỉ tác dụng lên xe lúc này bằng:`,
+                    options: [
+                        `Thành phần trọng lực song song với mặt phẳng nghiêng (<span class="math-var">P</span><sub>x</sub> = <span class="math-var">P</span>·sin 30°).`,
+                        `Trọng lượng <span class="math-var">P</span> của xe.`,
+                        `Thành phần trọng lực vuông góc với mặt phẳng nghiêng (<span class="math-var">P</span><sub>y</sub> = <span class="math-var">P</span>·cos 30°).`,
+                        `Lớn hơn trọng lượng <span class="math-var">P</span> của xe.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Quan sát đường gióng phân tích lực trên mặt phẳng nghiêng (Hình SVG 6): Khi xe đứng yên trên dốc, theo phương Ox song song với mặt dốc, lực ma sát nghỉ <span class="vec">F</span><sub>msn</sub> hướng lên dốc cân bằng đúng với <strong>thành phần trọng lực song song với mặt dốc (<span class="math-var">F</span><sub>msn</sub> = <span class="math-var">P</span><sub>x</sub> = <span class="math-var">P</span>·sin 30°)</strong>.`
+                }
+            ],
+
+            // CẤP ĐỘ 2: MỨC 7 - 8 ĐIỂM (5 CÂU VẬN DỤNG)
+            2: [
+                {
+                    id: "B18_L2_01",
+                    category: "Vận dụng (7-8đ) • Kéo vật chuyển động nhanh dần đều trên sàn ngang",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Cho một vật có khối lượng <span class="math-var">m</span> = 10 kg đặt trên một sàn nhà nằm ngang. Một người tác dụng một lực kéo nằm ngang <span class="math-var">F</span><sub>k</sub> = 30 N vào vật. Biết hệ số ma sát trượt giữa vật và sàn nhà là μ = 0,2 và lấy <span class="math-var">g</span> = 10 m/s². Độ lớn lực ma sát trượt <span class="math-var">F</span><sub>mst</sub> và gia tốc <span class="math-var">a</span> của vật lần lượt là:`,
+                    options: [
+                        `<span class="math-var">F</span><sub>mst</sub> = 20 N và <span class="math-var">a</span> = 1,0 m/s².`,
+                        `<span class="math-var">F</span><sub>mst</sub> = 20 N và <span class="math-var">a</span> = 0,5 m/s².`,
+                        `<span class="math-var">F</span><sub>mst</sub> = 30 N và <span class="math-var">a</span> = 1,0 m/s².`,
+                        `<span class="math-var">F</span><sub>mst</sub> = 10 N và <span class="math-var">a</span> = 2,0 m/s².`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Chiếu lên trục Oy: Áp lực <span class="math-var">N</span> = <span class="math-var">P</span> = <span class="math-var">m</span><span class="math-var">g</span> = 10 · 10 = 100 N.<br>+ Độ lớn lực ma sát trượt: <span class="math-var">F</span><sub>mst</sub> = μ · <span class="math-var">N</span> = 0,2 · 100 = <strong>20 N</strong>.<br>+ Chiếu lên trục Ox (chiều chuyển động): <span class="math-var">F</span><sub>k</sub> − <span class="math-var">F</span><sub>mst</sub> = <span class="math-var">m</span><span class="math-var">a</span><br>⇒ <span class="math-var">a</span> = <span class="frac"><span class="num">30 − 20</span><span class="den">10</span></span> = <strong>1,0 m/s²</strong>.`
+                },
+                {
+                    id: "B18_L2_02",
+                    category: "Vận dụng (7-8đ) • Vật trượt chậm dần đều đến khi dừng lại",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Một vật đang đứng yên trên mặt phẳng nằm ngang thì được truyền một vận tốc đầu <span class="math-var">v</span><sub>0</sub> = 10 m/s để trượt trên mặt phẳng đó. Biết hệ số ma sát trượt giữa vật và mặt phẳng là μ = 0,1 và lấy <span class="math-var">g</span> = 10 m/s². Quãng đường <span class="math-var">s</span> mà vật đi được cho đến khi dừng lại hẳn là:`,
+                    options: [
+                        `50 m.`,
+                        `40 m.`,
+                        `60 m.`,
+                        `100 m.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Khi trượt tự do trên mặt phẳng ngang, vật chỉ chịu lực cản là lực ma sát trượt <span class="math-var">F</span><sub>mst</sub> = μ<span class="math-var">m</span><span class="math-var">g</span>.<br>+ Gia tốc của vật: <span class="math-var">a</span> = <span class="frac"><span class="num">−<span class="math-var">F</span><sub>mst</sub></span><span class="den"><span class="math-var">m</span></span></span> = −μ<span class="math-var">g</span> = −0,1 · 10 = −1 m/s².<br>+ Quãng đường đi được đến khi dừng (<span class="math-var">v</span> = 0): <span class="math-var">v</span><sup>2</sup> − <span class="math-var">v</span><sub>0</sub><sup>2</sup> = 2<span class="math-var">a</span><span class="math-var">s</span><br>⇒ <span class="math-var">s</span> = <span class="frac"><span class="num">0 − 10<sup>2</sup></span><span class="den">2 · (−1)</span></span> = <strong>50 m</strong>.`
+                },
+                {
+                    id: "B18_L2_03",
+                    category: "Vận dụng (7-8đ) • Kéo thùng gỗ xiên góc α = 60° chuyển động thẳng đều",
+                    diagram: "svg_4_pull_upward_angle",
+                    prompt: `Một thùng gỗ có khối lượng <span class="math-var">m</span> = 5 kg đặt trên mặt sàn nằm ngang được kéo bởi một lực <span class="math-var">F</span> = 10 N có phương hợp với phương ngang một góc α = 60° (Hình SVG 4). Biết thùng gỗ trượt <strong>thẳng đều</strong> trên mặt sàn. Độ lớn của lực ma sát trượt <span class="math-var">F</span><sub>mst</sub> tác dụng lên thùng gỗ là:`,
+                    options: [
+                        `5 N.`,
+                        `10 N.`,
+                        `2 N.`,
+                        `8,66 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `Quan sát đường gióng chiếu lực <span class="vec">F</span> lên trục ngang Ox (Hình SVG 4):<br>Vì thùng gỗ trượt <strong>thẳng đều</strong> (<span class="math-var">a</span> = 0) nên thành phần lực kéo theo phương ngang cân bằng với lực ma sát trượt:<br><strong><span class="math-var">F</span><sub>mst</sub> = <span class="math-var">F</span><sub>x</sub> = <span class="math-var">F</span> · cos 60° = 10 · 0,5 = 5 N</strong>.`
+                },
+                {
+                    id: "B18_L2_04",
+                    category: "Vận dụng (7-8đ) • Bài toán SGK Kết nối tri thức (Đẩy thùng 55 kg)",
+                    diagram: "svg_1_horizontal_friction",
+                    prompt: `Người ta đẩy một cái thùng có khối lượng <span class="math-var">m</span> = 55 kg theo phương ngang với lực <span class="math-var">F</span> = 220 N làm thùng chuyển động trên mặt phẳng ngang. Hệ số ma sát trượt giữa thùng và mặt phẳng là μ = 0,35. Lấy <span class="math-var">g</span> = 9,8 m/s². Gia tốc <span class="math-var">a</span> của cái thùng có giá trị gần nhất là:`,
+                    options: [
+                        `0,57 m/s².`,
+                        `1,25 m/s².`,
+                        `0,85 m/s².`,
+                        `3,43 m/s².`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Áp lực lên mặt sàn ngang: <span class="math-var">N</span> = <span class="math-var">P</span> = <span class="math-var">m</span><span class="math-var">g</span> = 55 · 9,8 = 539 N.<br>+ Lực ma sát trượt: <span class="math-var">F</span><sub>mst</sub> = μ · <span class="math-var">N</span> = 0,35 · 539 = 188,65 N.<br>+ Gia tốc của thùng: <span class="math-var">a</span> = <span class="frac"><span class="num"><span class="math-var">F</span> − <span class="math-var">F</span><sub>mst</sub></span><span class="den"><span class="math-var">m</span></span></span> = <span class="frac"><span class="num">220 − 188,65</span><span class="den">55</span></span> = <strong>0,57 m/s²</strong>.`
+                },
+                {
+                    id: "B18_L2_05",
+                    category: "Vận dụng (7-8đ) • Vật đứng yên trên mặt phẳng nghiêng có lực giữ F",
+                    diagram: "svg_6_incline_slope",
+                    prompt: `Một vật có khối lượng <span class="math-var">m</span> = 0,5 kg đang nằm <strong>đứng yên</strong> trên một mặt phẳng nghiêng góc α = 30° so với phương ngang dưới tác dụng của một lực kéo <span class="math-var">F</span> = 5 N hướng lên song song với mặt phẳng nghiêng (Hình SVG 6). Lấy <span class="math-var">g</span> = 10 m/s². Độ lớn của lực ma sát nghỉ <span class="math-var">f</span><sub>msn</sub> tác dụng lên vật trong trường hợp này là:`,
+                    options: [
+                        `2,5 N.`,
+                        `5,0 N.`,
+                        `0 N.`,
+                        `4,33 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Thành phần trọng lực kéo vật xuống dọc mặt dốc là: <span class="math-var">P</span><sub>x</sub> = <span class="math-var">m</span><span class="math-var">g</span> · sin 30° = 0,5 · 10 · 0,5 = 2,5 N.<br>+ Vì lực kéo hướng lên dốc là <span class="math-var">F</span> = 5 N &gt; <span class="math-var">P</span><sub>x</sub> (2,5 N) nên vật có xu hướng trượt lên dốc, do đó lực ma sát nghỉ <span class="vec">f</span><sub>msn</sub> hướng xuống dốc.<br>+ Điều kiện cân bằng dọc mặt dốc: <span class="math-var">F</span> − <span class="math-var">P</span><sub>x</sub> − <span class="math-var">f</span><sub>msn</sub> = 0 ⇒ <strong><span class="math-var">f</span><sub>msn</sub> = 5 − 2,5 = 2,5 N</strong>.`
+                }
+            ],
+
+            // CẤP ĐỘ 3: MỨC 9 - 10 ĐIỂM (5 CÂU VẬN DỤNG CAO)
+            3: [
+                {
+                    id: "B18_L3_01",
+                    category: "Vận dụng cao (9-10đ) • Kéo thùng sách xiên góc 45° chuyển động thẳng đều",
+                    diagram: "svg_4_pull_upward_angle",
+                    prompt: `Một học sinh dùng dây kéo một thùng sách nặng <span class="math-var">m</span> = 10 kg chuyển động trên mặt sàn nằm ngang. Dây nghiêng một góc chếch lên trên α = 45° so với phương ngang (Hình SVG 4). Hệ số ma sát trượt giữa đáy thùng và mặt sàn là μ = 0,2. Lấy <span class="math-var">g</span> = 9,8 m/s². Độ lớn của lực kéo <span class="math-var">F</span> để thùng sách chuyển động <strong>thẳng đều</strong> là:`,
+                    options: [
+                        `23,1 N.`,
+                        `19,6 N.`,
+                        `13,85 N.`,
+                        `27,7 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Chiếu phương trình <span class="vec">F</span> + <span class="vec">P</span> + <span class="vec">N</span> + <span class="vec">F</span><sub>mst</sub> = <span class="vec">0</span> lên hai trục Ox và Oy:<br>• Trên Oy: <span class="math-var">N</span> + <span class="math-var">F</span>sin 45° − <span class="math-var">m</span><span class="math-var">g</span> = 0 ⇒ <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sin 45°.<br>• Trên Ox: <span class="math-var">F</span>cos 45° − μ<span class="math-var">N</span> = 0 ⇔ <span class="math-var">F</span>cos 45° − μ(<span class="math-var">m</span><span class="math-var">g</span> − <span class="math-var">F</span>sin 45°) = 0.<br>+ Suy ra: <strong><span class="math-var">F</span> = <span class="frac"><span class="num">μ<span class="math-var">m</span><span class="math-var">g</span></span><span class="den">cos 45° + μ·sin 45°</span></span> = <span class="frac"><span class="num">0,2 · 10 · 9,8</span><span class="den">(1 + 0,2) · (√2/2)</span></span> = <span class="frac"><span class="num">19,6</span><span class="den">0,8485</span></span> ≈ 23,1 N</strong>.`
+                },
+                {
+                    id: "B18_L3_02",
+                    category: "Vận dụng cao (9-10đ) • Đẩy hòm bằng lực chếch xuống góc 30°",
+                    diagram: "svg_5_push_downward_angle",
+                    prompt: `Một cái hòm khối lượng <span class="math-var">m</span> = 40 kg đặt trên mặt sàn nhà nằm ngang. Hệ số ma sát trượt giữa hòm và sàn nhà là μ<sub>t</sub> = 0,2. Người ta đẩy hòm bằng một lực <span class="math-var">F</span> = 200 N theo phương hợp với phương nằm ngang một góc α = 30° <strong>chếch xuống phía dưới</strong> (Hình SVG 5). Lấy <span class="math-var">g</span> = 9,8 m/s². Gia tốc <span class="math-var">a</span> của cái hòm (làm tròn đến 2 chữ số thập phân) là:`,
+                    options: [
+                        `1,87 m/s² (hoặc 1,78 m/s²).`,
+                        `3,87 m/s².`,
+                        `2,35 m/s².`,
+                        `0,95 m/s².`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Quan sát Hình SVG 5: Vì lực <span class="vec">F</span> hướng chếch xuống dưới góc α = 30° nên khi chiếu lên trục thẳng đứng Oy ta có:<br><span class="math-var">N</span> − <span class="math-var">P</span> − <span class="math-var">F</span>sin 30° = 0 ⇒ <span class="math-var">N</span> = <span class="math-var">m</span><span class="math-var">g</span> + <span class="math-var">F</span>sin 30° = 40 · 9,8 + 200 · 0,5 = 492 N.<br>+ Lực ma sát trượt: <span class="math-var">F</span><sub>mst</sub> = μ<sub>t</sub> · <span class="math-var">N</span> = 0,2 · 492 = 98,4 N.<br>+ Chiếu lên trục ngang Ox: <span class="math-var">F</span>cos 30° − <span class="math-var">F</span><sub>mst</sub> = <span class="math-var">m</span><span class="math-var">a</span><br>⇒ <strong><span class="math-var">a</span> = <span class="frac"><span class="num">200 · cos 30° − 98,4</span><span class="den">40</span></span> = <span class="frac"><span class="num">173,2 − 98,4</span><span class="den">40</span></span> = 1,87 m/s²</strong> (trong tài liệu làm tròn trung gian ghi 1,78 m/s²).`
+                },
+                {
+                    id: "B18_L3_03",
+                    category: "Vận dụng cao (9-10đ) • Bài toán Vận động viên trượt tuyết 2 giai đoạn",
+                    diagram: "svg_7_ski_hill",
+                    prompt: `Một vận động viên trượt tuyết nặng 70 kg trượt không vận tốc đầu từ đỉnh đồi A cao <span class="math-var">h</span> = 25 m, chiều dài dốc trượt từ đỉnh A xuống chân đồi B là <span class="math-var">A</span><span class="math-var">B</span> = 50 m (Hình SVG 7). Hệ số ma sát trượt giữa ván và mặt tuyết trên dốc AB là μ = 0,05. Khi xuống đến chân đồi B, vận động viên tiếp tục trượt trên mặt tuyết nằm ngang BC với hệ số ma sát μ' = 0,1 cho đến khi dừng lại tại C. Lấy <span class="math-var">g</span> = 10 m/s². Gia tốc <span class="math-var">a</span> trên dốc AB và thời gian <span class="math-var">t</span> trượt trên đoạn ngang BC lần lượt là:`,
+                    options: [
+                        `<span class="math-var">a</span> ≈ 4,6 m/s² và <span class="math-var">t</span> ≈ 21,4 s.`,
+                        `<span class="math-var">a</span> = 5,0 m/s² và <span class="math-var">t</span> = 22,4 s.`,
+                        `<span class="math-var">a</span> ≈ 4,6 m/s² và <span class="math-var">t</span> ≈ 10,7 s.`,
+                        `<span class="math-var">a</span> ≈ 3,27 m/s² và <span class="math-var">t</span> ≈ 18,1 s.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Góc nghiêng của đồi tuyết: sinα = <span class="frac"><span class="num">25</span><span class="den">50</span></span> = 0,5 ⇒ α = 30°.<br>+ <strong>Trên dốc AB:</strong> <span class="math-var">a</span> = <span class="math-var">g</span>(sin 30° − μcos 30°) = 10 · (0,5 − 0,05 · 0,866) ≈ <strong>4,6 m/s²</strong>.<br>+ Vận tốc tại chân đồi B: <span class="math-var">v</span><sub>B</sub> = <span class="math-sqrt"><span class="math-sqrt-symbol">√</span><span class="math-sqrt-content">2<span class="math-var">a</span> · <span class="math-var">A</span><span class="math-var">B</span></span></span> = <span class="math-sqrt"><span class="math-sqrt-symbol">√</span><span class="math-sqrt-content">2 · 4,6 · 50</span></span> ≈ 21,4 m/s.<br>+ <strong>Trên mặt ngang BC:</strong> Gia tốc hãm <span class="math-var">a</span>' = −μ'<span class="math-var">g</span> = −0,1 · 10 = −1 m/s².<br>+ Thời gian trượt trên mặt ngang BC đến lúc dừng lại: <span class="math-var">t</span> = <span class="frac"><span class="num">0 − <span class="math-var">v</span><sub>B</sub></span><span class="den"><span class="math-var">a</span>'</span></span> = <span class="frac"><span class="num">−21,4</span><span class="den">−1</span></span> = <strong>21,4 s</strong>.`
+                },
+                {
+                    id: "B18_L3_04",
+                    category: "Vận dụng cao (9-10đ) • Cơ hệ 2 vật nối dây trên mặt ngang có ma sát",
+                    diagram: "svg_8_two_blocks_connected",
+                    prompt: `Cho cơ hệ như Hình SVG 8: Vật 1 có khối lượng <span class="math-var">m</span><sub>1</sub> = 200 g và vật 2 có khối lượng <span class="math-var">m</span><sub>2</sub> = 120 g được nối với nhau bởi một sợi dây nhẹ, không dãn trên mặt phẳng nằm ngang. Hệ số ma sát trượt giữa cả hai vật với mặt ngang đều là μ = 0,4. Tác dụng vào vật 2 một lực kéo nằm ngang <span class="math-var">F</span> = 1,5 N. Lấy <span class="math-var">g</span> = 10 m/s². Gia tốc chuyển động <span class="math-var">a</span> của hệ và độ lớn lực căng dây <span class="math-var">T</span> nối hai vật lần lượt là:`,
+                    options: [
+                        `<span class="math-var">a</span> = 0,6875 m/s² và <span class="math-var">T</span> = 0,9375 N.`,
+                        `<span class="math-var">a</span> = 0,6875 m/s² và <span class="math-var">T</span> = 0,5625 N.`,
+                        `<span class="math-var">a</span> = 4,6875 m/s² và <span class="math-var">T</span> = 0,9375 N.`,
+                        `<span class="math-var">a</span> = 1,2500 m/s² và <span class="math-var">T</span> = 1,0500 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Đổi đơn vị: <span class="math-var">m</span><sub>1</sub> = 0,2 kg; <span class="math-var">m</span><sub>2</sub> = 0,12 kg ⇒ <span class="math-var">m</span><sub>1</sub> + <span class="math-var">m</span><sub>2</sub> = 0,32 kg.<br>+ Gia tốc chung của hệ hai vật:<br><span class="math-var">a</span> = <span class="frac"><span class="num"><span class="math-var">F</span> − μ(<span class="math-var">m</span><sub>1</sub> + <span class="math-var">m</span><sub>2</sub>)<span class="math-var">g</span></span><span class="den"><span class="math-var">m</span><sub>1</sub> + <span class="math-var">m</span><sub>2</sub></span></span> = <span class="frac"><span class="num">1,5</span><span class="den">0,32</span></span> − 0,4 · 10 = 4,6875 − 4 = <strong>0,6875 m/s²</strong>.<br>+ Xét riêng vật 1 (<span class="math-var">m</span><sub>1</sub> = 0,2 kg) được kéo bởi lực căng <span class="vec">T</span><sub>1</sub>:<br><span class="math-var">T</span> − <span class="math-var">F</span><sub>ms1</sub> = <span class="math-var">m</span><sub>1</sub><span class="math-var">a</span> ⇒ <strong><span class="math-var">T</span> = <span class="math-var">m</span><sub>1</sub>(μ<span class="math-var">g</span> + <span class="math-var">a</span>) = 0,2 · (4 + 0,6875) = 0,9375 N</strong>.`
+                },
+                {
+                    id: "B18_L3_05",
+                    category: "Vận dụng cao (9-10đ) • Cơ hệ Ròng rọc ở mép bàn có ma sát",
+                    diagram: "svg_9_pulley_table",
+                    prompt: `Cho cơ hệ như Hình SVG 9: Vật <span class="math-var">m</span><sub>1</sub> = 1 kg treo thẳng đứng và vật <span class="math-var">m</span><sub>2</sub> = 3 kg đặt trên mặt bàn nằm ngang được nối với nhau bằng sợi dây nhẹ không dãn vắt qua ròng rọc lí tưởng ở mép bàn. Hệ số ma sát trượt giữa <span class="math-var">m</span><sub>2</sub> và mặt bàn là μ = 0,2. Lấy <span class="math-var">g</span> = 10 m/s². Khi thả cho hệ chuyển động, <strong>gia tốc <span class="math-var">a</span></strong> của mỗi vật, <strong>lực căng dây <span class="math-var">T</span></strong> và <strong>lực nén <span class="math-var">R</span> lên trục ròng rọc</strong> lần lượt là:`,
+                    options: [
+                        `<span class="math-var">a</span> = 1 m/s²; <span class="math-var">T</span> = 9 N; <span class="math-var">R</span> = 9√2 N.`,
+                        `<span class="math-var">a</span> = 2,5 m/s²; <span class="math-var">T</span> = 7,5 N; <span class="math-var">R</span> = 7,5√2 N.`,
+                        `<span class="math-var">a</span> = 1 m/s²; <span class="math-var">T</span> = 9 N; <span class="math-var">R</span> = 18 N.`,
+                        `<span class="math-var">a</span> = 1,5 m/s²; <span class="math-var">T</span> = 8,5 N; <span class="math-var">R</span> = 8,5√2 N.`
+                    ],
+                    correctIndex: 0,
+                    explanation: `+ Ta có trọng lượng vật 1 là <span class="math-var">P</span><sub>1</sub> = <span class="math-var">m</span><sub>1</sub><span class="math-var">g</span> = 10 N; lực ma sát trượt trên vật 2 là <span class="math-var">F</span><sub>ms2</sub> = μ<span class="math-var">m</span><sub>2</sub><span class="math-var">g</span> = 0,2 · 3 · 10 = 6 N.<br>+ Gia tốc của mỗi vật: <span class="math-var">a</span> = <span class="frac"><span class="num"><span class="math-var">P</span><sub>1</sub> − <span class="math-var">F</span><sub>ms2</sub></span><span class="den"><span class="math-var">m</span><sub>1</sub> + <span class="math-var">m</span><sub>2</sub></span></span> = <span class="frac"><span class="num">10 − 6</span><span class="den">1 + 3</span></span> = <strong>1 m/s²</strong>.<br>+ Xét vật <span class="math-var">m</span><sub>1</sub> đi xuống: <span class="math-var">P</span><sub>1</sub> − <span class="math-var">T</span> = <span class="math-var">m</span><sub>1</sub><span class="math-var">a</span> ⇒ <strong><span class="math-var">T</span> = <span class="math-var">m</span><sub>1</sub>(<span class="math-var">g</span> − <span class="math-var">a</span>) = 1 · (10 − 1) = 9 N</strong>.<br>+ Vì hai nhánh dây qua ròng rọc vuông góc với nhau (<span class="vec">T</span><sub>1</sub>' ⊥ <span class="vec">T</span><sub>2</sub>') nên hợp lực nén lên trục ròng rọc là: <strong><span class="math-var">R</span> = <span class="math-sqrt"><span class="math-sqrt-symbol">√</span><span class="math-sqrt-content"><span class="math-var">T</span><sup>2</sup> + <span class="math-var">T</span><sup>2</sup></span></span> = <span class="math-var">T</span><span class="math-sqrt"><span class="math-sqrt-symbol">√</span><span class="math-sqrt-content">2</span></span> = 9<span class="math-sqrt"><span class="math-sqrt-symbol">√</span><span class="math-sqrt-content">2</span></span> N</strong>.`
+                }
+            ]
+        };
+
+        /**************************************************************************
+         * 4. QUẢN LÝ TRẠNG THÁI, ĐẢO CÂU HỎI/ĐÁP ÁN & LƯU TRỮ LOCALSTORAGE
+         **************************************************************************/
+        const STORAGE_KEY = "VL10_BAI18_LUCMASAT_V1";
+
+        let state = {
+            studentName: "",
+            studentClass: "",
+            level1MasteryCount: 0, // Phải đạt >= 3 lần đúng 12/12 mới mở khóa CĐ 2 & 3
+            teacherUnlocked: false,
+            bestScores: { 1: 0, 2: 0, 3: 0 },
+            history: []
+        };
+
+        let currentLevel = 1;
+        let currentQuestions = [];
+        let currentQIndex = 0;
+        let selectedOptions = []; // null nếu chưa chọn; chỉ số 0..3 nếu đã tích chọn (hiển thị đúng/sai ngay)
+
+        // Thuật toán Fisher-Yates đảo ngẫu nhiên
+        function shuffle(array) {
+            const arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        function loadState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (raw) {
+                    state = { ...state, ...JSON.parse(raw) };
+                }
+            } catch (e) {
+                console.warn("Không thể đọc localStorage:", e);
+            }
+            document.getElementById('inputStudentName').value = state.studentName || "";
+            document.getElementById('inputStudentClass').value = state.studentClass || "";
+            refreshHeaderAndTabsUI();
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.warn("Không thể lưu localStorage:", e);
+            }
+            refreshHeaderAndTabsUI();
+        }
+
+        function saveProfile() {
+            state.studentName = document.getElementById('inputStudentName').value.trim();
+            state.studentClass = document.getElementById('inputStudentClass').value.trim();
+            saveState();
+        }
+
+        function isLevelOpen(lvl) {
+            if (lvl === 1) return true;
+            return state.level1MasteryCount >= 3 || state.teacherUnlocked;
+        }
+
+        function refreshHeaderAndTabsUI() {
+            // Hiển thị 3 ngôi sao vàng tiến độ mở khóa
+            const starsBox = document.getElementById('starsContainer');
+            const capped = Math.min(state.level1MasteryCount, 3);
+            let html = "";
+            for (let i = 1; i <= 3; i++) {
+                html += i <= capped
+                    ? `<span title="Lần ${i}: Đã đạt 12/12">⭐</span>`
+                    : `<span class="opacity-25 grayscale" title="Chưa đạt lần ${i}">⭐</span>`;
+            }
+            starsBox.innerHTML = html;
+
+            const progTxt = document.getElementById('masteryProgressText');
+            if (state.level1MasteryCount >= 3) {
+                progTxt.textContent = `Đã đạt ${state.level1MasteryCount}/3 lần (ĐÃ MỞ KHÓA!)`;
+                progTxt.className = "text-[11px] font-extrabold text-emerald-700 mt-0.5";
+            } else {
+                progTxt.textContent = `${state.level1MasteryCount} / 3 lần đạt 12/12`;
+                progTxt.className = "text-[11px] font-extrabold text-amber-800 mt-0.5";
+            }
+
+            document.getElementById('badgeAttemptCount').textContent = state.history.length;
+
+            // Cập nhật 3 thẻ Cấp độ
+            const open23 = isLevelOpen(2);
+            const b1 = document.getElementById('btnTabL1');
+            const b2 = document.getElementById('btnTabL2');
+            const b3 = document.getElementById('btnTabL3');
+
+            b1.className = `text-left p-3.5 rounded-xl border-2 transition ${
+                currentLevel === 1 ? 'bg-blue-50/90 border-blue-700 shadow-sm ring-2 ring-blue-200' : 'bg-white border-slate-200 hover:border-blue-400'
+            }`;
+            b2.className = `text-left p-3.5 rounded-xl border-2 transition ${
+                currentLevel === 2 ? 'bg-emerald-50/90 border-emerald-700 shadow-sm ring-2 ring-emerald-200' :
+                open23 ? 'bg-white border-slate-200 hover:border-emerald-400' : 'bg-slate-100 border-slate-200 opacity-75'
+            }`;
+            b3.className = `text-left p-3.5 rounded-xl border-2 transition ${
+                currentLevel === 3 ? 'bg-purple-50/90 border-purple-700 shadow-sm ring-2 ring-purple-200' :
+                open23 ? 'bg-white border-slate-200 hover:border-purple-400' : 'bg-slate-100 border-slate-200 opacity-75'
+            }`;
+
+            document.getElementById('statL1').textContent = `Đạt 12/12: ${state.level1MasteryCount}/3 lần`;
+            document.getElementById('lockIconL2').textContent = open23 ? "🔓" : "🔒";
+            document.getElementById('lockIconL3').textContent = open23 ? "🚀" : "🔒";
+
+            document.getElementById('statL2').textContent = open23 ? `Kỷ lục: ${state.bestScores[2]}/5` : `Cần ${3 - state.level1MasteryCount} lần 12/12 nữa`;
+            document.getElementById('statL3').textContent = open23 ? `Kỷ lục: ${state.bestScores[3]}/5` : `Cần ${3 - state.level1MasteryCount} lần 12/12 nữa`;
+        }
+
+        function startLevelSession(lvl) {
+            currentLevel = lvl;
+            const bank = QUESTION_BANK[lvl];
+
+            // Đảo ngẫu nhiên vị trí câu hỏi và đảo ngẫu nhiên vị trí 4 phương án A, B, C, D
+            currentQuestions = shuffle(bank).map(item => {
+                const taggedOptions = item.options.map((txt, idx) => ({
+                    txt,
+                    isRight: idx === item.correctIndex
+                }));
+                const shuffledOpts = shuffle(taggedOptions);
+                return {
+                    ...item,
+                    shuffledOpts,
+                    correctShuffledIdx: shuffledOpts.findIndex(o => o.isRight)
+                };
+            });
+
+            currentQIndex = 0;
+            selectedOptions = new Array(currentQuestions.length).fill(null);
+
+            document.getElementById('summaryCard').classList.add('hidden');
+            document.getElementById('quizMainCard').classList.remove('hidden');
+            document.getElementById('lockedAlertBox').classList.add('hidden');
+
+            refreshHeaderAndTabsUI();
+            renderQuestionView();
+        }
+
+        function switchLevel(lvl) {
+            if (!isLevelOpen(lvl)) {
+                playWrongFunnySound();
+                const rem = Math.max(0, 3 - state.level1MasteryCount);
+                const alertBox = document.getElementById('lockedAlertBox');
+                document.getElementById('lockedAlertText').textContent =
+                    `Cấp độ ${lvl} đang khóa! Em phải hoàn thành hết 12 câu Cấp độ 1 và đạt đúng 12/12 đủ 3 lần mới được mở khóa (Hiện tại: ${state.level1MasteryCount}/3 lần, còn thiếu ${rem} lần).`;
+                alertBox.classList.remove('hidden');
+                return;
+            }
+            startLevelSession(lvl);
+        }
+
+        function shuffleAndRestartCurrentLevel() {
+            startLevelSession(currentLevel);
+        }
+
+        /**************************************************************************
+         * 5. HIỂN THỊ CÂU HỎI & CHẤM ĐÚNG/SAI NGAY KHI HỌC SINH TÍCH CHỌN
+         **************************************************************************/
+        function renderQuestionView() {
+            const q = currentQuestions[currentQIndex];
+            const total = currentQuestions.length;
+
+            const pill = document.getElementById('levelPillHeader');
+            if (currentLevel === 1) {
+                pill.textContent = "Cấp độ 1 • Nền tảng";
+                pill.className = "px-2.5 py-0.5 rounded bg-blue-500 text-xs font-extrabold uppercase";
+            } else if (currentLevel === 2) {
+                pill.textContent = "Cấp độ 2 • 7-8 Điểm";
+                pill.className = "px-2.5 py-0.5 rounded bg-emerald-500 text-xs font-extrabold uppercase";
+            } else {
+                pill.textContent = "Cấp độ 3 • 9-10 Điểm";
+                pill.className = "px-2.5 py-0.5 rounded bg-purple-500 text-xs font-extrabold uppercase";
+            }
+
+            document.getElementById('questionIndexHeader').textContent = `Câu ${currentQIndex + 1} / ${total}`;
+            document.getElementById('liveTotalCounter').textContent = total;
+
+            const currentRightCount = selectedOptions.reduce((acc, sel, idx) => {
+                if (sel !== null && sel === currentQuestions[idx].correctShuffledIdx) return acc + 1;
+                return acc;
+            }, 0);
+            document.getElementById('liveCorrectCounter').textContent = currentRightCount;
+
+            // Thanh số thứ tự câu hỏi
+            const numBar = document.getElementById('questionNumbersBar');
+            numBar.innerHTML = currentQuestions.map((_, i) => {
+                let cls = "bg-slate-700 text-slate-300 border-slate-600";
+                if (selectedOptions[i] !== null) {
+                    cls = selectedOptions[i] === currentQuestions[i].correctShuffledIdx
+                        ? "bg-emerald-500 text-white border-emerald-400"
+                        : "bg-rose-500 text-white border-rose-400";
+                }
+                const activeRing = i === currentQIndex ? "ring-2 ring-amber-400 scale-110" : "";
+                return `<button onclick="jumpToQuestion(${i})" class="w-6 h-6 rounded text-[11px] font-extrabold border transition ${cls} ${activeRing}">${i + 1}</button>`;
+            }).join('');
+
+            // Nội dung đề bài
+            document.getElementById('questionCategoryBadge').textContent = `📌 ${q.category}`;
+            document.getElementById('questionTextContainer').innerHTML = `<span class="text-blue-700 mr-1">Câu ${currentQIndex + 1}:</span> ${q.prompt}`;
+
+            // Render 4 phương án A, B, C, D
+            const letters = ['A', 'B', 'C', 'D'];
+            const selIdx = selectedOptions[currentQIndex];
+            const isAnswered = selIdx !== null;
+
+            const optsHTML = q.shuffledOpts.map((opt, idx) => {
+                let cardCls = "bg-white hover:bg-blue-50/60 border-slate-300 text-slate-800 cursor-pointer";
+                let badgeCls = "bg-slate-100 text-slate-700 border border-slate-300";
+                let rightWrongTag = "";
+
+                if (isAnswered) {
+                    if (idx === q.correctShuffledIdx) {
+                        cardCls = "bg-emerald-50 border-emerald-500 text-emerald-950 ring-2 ring-emerald-200";
+                        badgeCls = "bg-emerald-600 text-white";
+                        rightWrongTag = `<span class="ml-auto text-xs font-extrabold text-emerald-700 shrink-0">✓ Đúng</span>`;
+                    } else if (idx === selIdx && selIdx !== q.correctShuffledIdx) {
+                        cardCls = "bg-rose-50 border-rose-500 text-rose-950 ring-2 ring-rose-200";
+                        badgeCls = "bg-rose-600 text-white";
+                        rightWrongTag = `<span class="ml-auto text-xs font-extrabold text-rose-700 shrink-0">✗ Sai</span>`;
+                    } else {
+                        cardCls = "bg-slate-50 border-slate-200 text-slate-400 opacity-75";
+                        badgeCls = "bg-slate-200 text-slate-400";
+                    }
+                }
+
+                return `
+                <button onclick="selectOptionInstant(${idx})" ${isAnswered ? 'disabled' : ''}
+                    class="w-full text-left p-3 sm:p-3.5 rounded-xl border-2 transition flex items-center gap-3 ${cardCls}">
+                    <span class="w-8 h-8 rounded-lg text-xs font-extrabold flex items-center justify-center shrink-0 ${badgeCls}">
+                        ${letters[idx]}
+                    </span>
+                    <span class="text-sm sm:text-base font-semibold flex-1 leading-snug">${opt.txt}</span>
+                    ${rightWrongTag}
+                </button>`;
+            }).join('');
+
+            document.getElementById('optionsListContainer').innerHTML = optsHTML;
+
+            // Hộp giải thích hiện ngay nếu đã chọn
+            const fbBox = document.getElementById('feedbackContainer');
+            if (isAnswered) {
+                const isRight = selIdx === q.correctShuffledIdx;
+                displayFeedbackBanner(isRight, q.explanation, false);
+            } else {
+                fbBox.classList.add('hidden');
+            }
+
+            // Render Hình minh họa SVG
+            const svgInfo = getDiagramSVG(q.diagram);
+            document.getElementById('svgDiagramHeading').textContent = `📐 ${svgInfo.heading}`;
+            document.getElementById('svgCanvasBox').innerHTML = svgInfo.svg;
+            document.getElementById('svgCaptionText').textContent = svgInfo.caption;
+
+            // Điều hướng Trước / Tiếp
+            document.getElementById('btnPrevQ').disabled = currentQIndex === 0;
+            const allDone = selectedOptions.every(s => s !== null);
+            const btnNext = document.getElementById('btnNextQ');
+            if (currentQIndex === total - 1) {
+                btnNext.textContent = allDone ? "🏁 Xem Kết Quả Lượt Làm" : "Hoàn thành câu chưa làm →";
+                btnNext.className = allDone
+                    ? "px-5 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs sm:text-sm font-extrabold shadow transition"
+                    : "px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-sm transition";
+            } else {
+                btnNext.textContent = "Câu tiếp theo →";
+                btnNext.className = "px-5 py-2.5 rounded-xl bg-blue-700 hover:bg-blue-800 text-white text-xs sm:text-sm font-extrabold shadow-sm transition";
+            }
+        }
+
+        // Tích chọn đáp án là báo Đúng/Sai ngay lập tức (không cần nút bấm Kiểm tra)
+        function selectOptionInstant(idx) {
+            if (selectedOptions[currentQIndex] !== null) return;
+            selectedOptions[currentQIndex] = idx;
+
+            const q = currentQuestions[currentQIndex];
+            const isRight = idx === q.correctShuffledIdx;
+
+            if (isRight) {
+                playCorrectFunnySound();
+            } else {
+                playWrongFunnySound();
+            }
+
+            renderQuestionView();
+            displayFeedbackBanner(isRight, q.explanation, true);
+        }
+
+        function displayFeedbackBanner(isRight, explanationHTML, animate) {
+            const box = document.getElementById('feedbackContainer');
+            const icon = document.getElementById('feedbackIcon');
+            const title = document.getElementById('feedbackTitle');
+            const msg = document.getElementById('feedbackFunnyMsg');
+            const exp = document.getElementById('feedbackExplanation');
+
+            box.classList.remove('hidden', 'animate-pop', 'animate-shake');
+
+            if (isRight) {
+                const item = FUNNY_PRAISES[Math.floor(Math.random() * FUNNY_PRAISES.length)];
+                box.className = `rounded-xl p-4 border-2 space-y-2 bg-emerald-50 border-emerald-400 text-emerald-950 ${animate ? 'animate-pop' : ''}`;
+                icon.textContent = "🎉";
+                title.textContent = item.title;
+                title.className = "font-extrabold text-sm sm:text-base text-emerald-800";
+                msg.textContent = item.msg;
+            } else {
+                const item = FUNNY_WRONGS[Math.floor(Math.random() * FUNNY_WRONGS.length)];
+                box.className = `rounded-xl p-4 border-2 space-y-2 bg-rose-50 border-rose-400 text-rose-950 ${animate ? 'animate-shake' : ''}`;
+                icon.textContent = "🤪";
+                title.textContent = item.title;
+                title.className = "font-extrabold text-sm sm:text-base text-rose-800";
+                msg.textContent = item.msg;
+            }
+
+            exp.innerHTML = explanationHTML;
+        }
+
+        function navigateQuestion(step) {
+            const total = currentQuestions.length;
+            const target = currentQIndex + step;
+            if (target >= 0 && target < total) {
+                currentQIndex = target;
+                renderQuestionView();
+            } else if (target >= total) {
+                const firstUnanswered = selectedOptions.findIndex(s => s === null);
+                if (firstUnanswered !== -1) {
+                    playWrongFunnySound();
+                    currentQIndex = firstUnanswered;
+                    renderQuestionView();
+                    return;
+                }
+                finishAttemptAndShowSummary();
+            }
+        }
+
+        function jumpToQuestion(idx) {
+            currentQIndex = idx;
+            renderQuestionView();
+        }
+
+        /**************************************************************************
+         * 6. TỔNG KẾT LƯỢT LÀM BÀI & KIỂM SOÁT MỞ KHÓA 3 LẦN ĐẠT 12/12
+         **************************************************************************/
+        function finishAttemptAndShowSummary() {
+            const total = currentQuestions.length;
+            const rightCount = currentQuestions.reduce((acc, q, i) => {
+                return selectedOptions[i] === q.correctShuffledIdx ? acc + 1 : acc;
+            }, 0);
+
+            const grade10 = ((rightCount / total) * 10).toFixed(1);
+            const timeStr = new Date().toLocaleString('vi-VN');
+
+            if (rightCount > (state.bestScores[currentLevel] || 0)) {
+                state.bestScores[currentLevel] = rightCount;
+            }
+
+            if (currentLevel === 1 && rightCount === total) {
+                state.level1MasteryCount += 1;
+            }
+
+            state.history.unshift({
+                level: currentLevel,
+                score: `${rightCount}/${total}`,
+                grade: grade10,
+                time: timeStr,
+                perfect: rightCount === total
+            });
+
+            saveState();
+
+            document.getElementById('quizMainCard').classList.add('hidden');
+            const sumCard = document.getElementById('summaryCard');
+            sumCard.classList.remove('hidden');
+
+            document.getElementById('summaryLevelBadge').textContent = `Kết quả Cấp độ ${currentLevel}`;
+            document.getElementById('summaryScoreFraction').textContent = `${rightCount} / ${total}`;
+            document.getElementById('summaryGrade10').textContent = `${grade10} đ`;
+            document.getElementById('summaryMasteryCount').textContent = `${state.level1MasteryCount} / 3 lần`;
+
+            const emoji = document.getElementById('summaryEmoji');
+            const title = document.getElementById('summaryTitle');
+            const sub = document.getElementById('summarySubtitle');
+            const btnRetry = document.getElementById('btnRetryLevel');
+            const btnNextLvl = document.getElementById('btnNextUnlockedLevel');
+
+            if (currentLevel === 1) {
+                if (rightCount === total) {
+                    playCorrectFunnySound();
+                    emoji.textContent = "🌟";
+                    btnRetry.textContent = "🔄 Làm lượt tiếp theo (Đảo câu hỏi & Đáp án)";
+                    if (state.level1MasteryCount >= 3) {
+                        title.textContent = "CHÚC MỪNG! ĐÃ MỞ KHÓA CẤP ĐỘ 2 & 3!";
+                        sub.textContent = `Em đã hoàn thành xuất sắc 12/12 câu Cấp độ 1 đủ ${state.level1MasteryCount} lần! Bây giờ em có thể chinh phục Cấp độ 2 (7-8đ) và Cấp độ 3 (9-10đ).`;
+                        btnNextLvl.classList.remove('hidden');
+                    } else {
+                        const need = 3 - state.level1MasteryCount;
+                        title.textContent = `Tuyệt vời! Đạt 12/12 câu (Lần ${state.level1MasteryCount}/3)`;
+                        sub.textContent = `Em cần làm lại Cấp độ 1 (với câu hỏi và đáp án đảo ngẫu nhiên) và đạt 12/12 thêm ${need} lần nữa để mở khóa Cấp độ 2 & 3 nhé!`;
+                        btnNextLvl.classList.add('hidden');
+                    }
+                } else {
+                    playWrongFunnySound();
+                    emoji.textContent = "💪";
+                    btnRetry.textContent = "🔄 Làm lại Cấp độ 1 (Đảo câu hỏi & Đáp án)";
+                    title.textContent = `Đạt ${rightCount}/12 câu — Chưa được tính lượt mở khóa!`;
+                    sub.textContent = `Quy định: Phải đúng tuyệt đối 12/12 câu mới được tính 1 lần qua ải. Hiện tại em đang có ${state.level1MasteryCount}/3 lần. Hãy đọc kỹ lời giải và bấm nút bên dưới để làm lại ngay nhé!`;
+                    btnNextLvl.classList.add('hidden');
+                }
+            } else {
+                playCorrectFunnySound();
+                emoji.textContent = rightCount === total ? "🏆" : "🎯";
+                btnRetry.textContent = `🔄 Làm lại Cấp độ ${currentLevel} (Đảo đề mới)`;
+                title.textContent = `Hoàn thành Cấp độ ${currentLevel}: Đạt ${rightCount}/${total} câu!`;
+                sub.textContent = rightCount === total
+                    ? "Xuất sắc! Em đã làm chủ hoàn toàn kiến thức và các dạng toán nâng cao về Lực ma sát!"
+                    : "Hãy xem kỹ lời giải từng bước và làm lại một lượt đề đảo mới để đạt điểm tối đa nhé!";
+                if (currentLevel === 2 && isLevelOpen(3)) {
+                    btnNextLvl.classList.remove('hidden');
+                } else {
+                    btnNextLvl.classList.add('hidden');
+                }
+            }
+
+            // Cập nhật phiếu xác nhận
+            document.getElementById('summaryTimeLabel').textContent = timeStr;
+            document.getElementById('certName').textContent = state.studentName || "Chưa nhập tên";
+            document.getElementById('certClass').textContent = state.studentClass || "Chưa nhập lớp";
+            document.getElementById('certMastery').textContent = `${state.level1MasteryCount}/3 lần`;
+            document.getElementById('certAttempts').textContent = `${state.history.length} lượt`;
+            document.getElementById('certBest1').textContent = `${state.bestScores[1]}/12`;
+            document.getElementById('certBest2').textContent = isLevelOpen(2) ? `${state.bestScores[2]}/5` : "Chưa mở";
+            document.getElementById('certBest3').textContent = isLevelOpen(3) ? `${state.bestScores[3]}/5` : "Chưa mở";
+        }
+
+        function goNextLevelAfterSummary() {
+            if (currentLevel === 1 && isLevelOpen(2)) switchLevel(2);
+            else if (currentLevel === 2 && isLevelOpen(3)) switchLevel(3);
+        }
+
+        function toggleTeacherMode() {
+            state.teacherUnlocked = !state.teacherUnlocked;
+            saveState();
+            const btn = document.getElementById('btnTeacherUnlock');
+            if (state.teacherUnlocked) {
+                btn.textContent = "👩‍🏫 Chế độ Giáo viên: ĐANG BẬT (Đã mở CĐ 2 & 3)";
+                btn.className = "px-3 py-1 rounded-lg bg-emerald-600 text-white font-bold transition";
+                playCorrectFunnySound();
+            } else {
+                btn.textContent = "👩‍🏫 Chế độ Giáo viên (Mở khóa nhanh để duyệt đề)";
+                btn.className = "px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition";
+                if (currentLevel > 1 && state.level1MasteryCount < 3) startLevelSession(1);
+            }
+        }
+
+        function resetStudentProgress() {
+            state = {
+                studentName: document.getElementById('inputStudentName').value.trim(),
+                studentClass: document.getElementById('inputStudentClass').value.trim(),
+                level1MasteryCount: 0,
+                teacherUnlocked: false,
+                bestScores: { 1: 0, 2: 0, 3: 0 },
+                history: []
+            };
+            const btn = document.getElementById('btnTeacherUnlock');
+            btn.textContent = "👩‍🏫 Chế độ Giáo viên (Mở khóa nhanh để duyệt đề)";
+            btn.className = "px-3 py-1 rounded-lg bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold transition";
+            saveState();
+            startLevelSession(1);
+        }
+
+        function toggleModal(id, show) {
+            const el = document.getElementById(id);
+            if (show) el.classList.remove('hidden');
+            else el.classList.add('hidden');
+        }
+
+        function openHistoryModal() {
+            const box = document.getElementById('historyListBox');
+            if (state.history.length === 0) {
+                box.innerHTML = `<p class="text-center text-slate-400 py-6">Chưa có lượt làm bài nào được lưu.</p>`;
+            } else {
+                box.innerHTML = state.history.map((h, i) => `
+                    <div class="p-3 rounded-xl border flex items-center justify-between ${h.perfect ? 'bg-emerald-50 border-emerald-200' : 'bg-slate-50 border-slate-200'}">
+                        <div>
+                            <div class="font-bold text-slate-800">Lượt #${state.history.length - i} • Cấp độ ${h.level}</div>
+                            <div class="text-[11px] text-slate-500">${h.time}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="font-extrabold ${h.perfect ? 'text-emerald-700' : 'text-blue-700'}">${h.score} (${h.grade}đ)</div>
+                            <div class="text-[11px] font-semibold">${h.perfect ? '⭐ Tuyệt đối 100%' : 'Chưa đạt tối đa'}</div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            toggleModal('historyModal', true);
+        }
+
+        window.onload = function () {
+            loadState();
+            startLevelSession(1);
+        };
+    </script>
+</body>
+</html>
